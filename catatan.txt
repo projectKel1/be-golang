@@ -1,0 +1,6 @@
+export DBUSER='root'
+export DBPASS='aris'
+export DBHOST='127.0.0.1'
+export DBPORT='3308'
+export DBNAME='hris_kelompok1'
+export JWTSECRET='sup3rs3cr3t'
