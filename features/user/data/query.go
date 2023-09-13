@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"group-project-3/app/middlewares"
+	_role "group-project-3/features/role/data"
 	"group-project-3/features/user"
 
 	"gorm.io/gorm"
@@ -66,7 +67,12 @@ func (repo *userQuery) Login(email string, password string) (dataLogin user.Core
 // SelectProfile implements user.UserDataInterface.
 func (repo *userQuery) SelectProfile(id int) (user.Core, error) {
 	var usersData User
+	var roleData _role.Role
 	tx := repo.db.First(&usersData, id).Scan(&usersData) // select * from users;
+	txRole := repo.db.Raw("SELECT * FROM roles WHERE id=?", usersData.RoleID).Scan(&roleData)
+	fmt.Println("ROLE DATA", roleData)
+
+	fmt.Println("role", txRole)
 
 	if tx.Error != nil {
 		return user.Core{}, tx.Error
@@ -74,6 +80,13 @@ func (repo *userQuery) SelectProfile(id int) (user.Core, error) {
 	if tx.RowsAffected == 0 {
 		return user.Core{}, errors.New("data not found")
 	}
+
+	// if txRole.Error != nil {
+	// 	return user.Core{}, tx.Error
+	// }
+	// if txRole.RowsAffected == 0 {
+	// 	return user.Core{}, errors.New("data role not found")
+	// }
 
 	// fmt.Println("users:", usersData)
 	//mapping dari struct gorm model ke struct core (entity)

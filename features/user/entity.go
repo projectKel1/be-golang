@@ -8,6 +8,7 @@ type Core struct {
 	Email           string `validate:"required,email"`
 	Password        string `validate:"required"`
 	RoleID          uint   `validate:"required"`
+	RoleName        string
 	Status          string
 	PhoneNumber     string
 	Address         string

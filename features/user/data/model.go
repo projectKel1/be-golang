@@ -48,10 +48,11 @@ type User struct {
 func CoreToModel(dataCore user.Core) User {
 	return User{
 		// ID:               dataCore.,
-		Fullname:        dataCore.Fullame,
-		Email:           dataCore.Email,
-		Password:        dataCore.Password,
-		RoleID:          dataCore.RoleID,
+		Fullname: dataCore.Fullame,
+		Email:    dataCore.Email,
+		Password: dataCore.Password,
+		RoleID:   dataCore.RoleID,
+		// RoleName:        dataCore.RoleName,
 		Status:          Status(dataCore.Status),
 		Address:         dataCore.Address,
 		Gender:          Gender(dataCore.Gender),
@@ -74,9 +75,10 @@ func CoreToModel(dataCore user.Core) User {
 // mapping struct model to struct core
 func ModelToCore(dataModel User) user.Core {
 	return user.Core{
-		ID:              dataModel.ID,
-		Fullame:         dataModel.Fullname,
-		RoleID:          dataModel.RoleID,
+		ID:      dataModel.ID,
+		Fullame: dataModel.Fullname,
+		RoleID:  dataModel.RoleID,
+		// RoleName:        dataModel.RoleName,
 		PhoneNumber:     dataModel.PhoneNumber,
 		CompanyId:       dataModel.CompanyId,
 		NoNik:           dataModel.NoNik,

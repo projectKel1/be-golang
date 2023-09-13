@@ -4,3 +4,26 @@ export DBHOST='127.0.0.1'
 export DBPORT='3308'
 export DBNAME='hris_kelompok1'
 export JWTSECRET='sup3rs3cr3t'
+
+export DBUSER='root'
+export DBPASS='123'
+export DBHOST='34.101.64.219'
+export DBPORT='3306'
+export DBNAME='hris_kelompok1'
+export JWTSECRET='sup3rs3cr3t'
+
+
+
+docker build -t teguh26/hris_kelompok1:latest --build-arg DBUSER=root --build-arg DBPASS=123 --build-arg DBHOST=34.101.64.219 --build-arg DBPORT=3306 --build-arg DBNAME=hris_kelompok1 --build-arg JWTSECRET=sup3rs3cr3t --no-cache .
+
+docker run -d -it –-rm -p [host_port]:[container_port] --name [container_name] [image_id/image_tag]
+
+contoh : docker run -d -p 8080:8080 teguh26/hris_kelompok1:latest  
+push docker registry
+
+docker login -u teguh26  
+docker push teguh26/hris_kelompok1   
+
+docker run -it teguh26/hris_kelompok1 sh 
+
+gcloud run :gcloud run deploy hris-kelompok-1 --image teguh26/hris_kelompok1 --project altera-academy
