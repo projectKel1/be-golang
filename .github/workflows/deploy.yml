@@ -31,4 +31,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/hris-kelompok1:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/hris_kelompok1:latest
