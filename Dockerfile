@@ -1,17 +1,21 @@
-FROM golang:1.20-alpine
+# Use the official Go image as the base image
+FROM golang:1.21.0-alpine
 
 # membuat direktori folder
-RUN mkdir /app
+# RUN mkdir /app
 
-# set working direktory
+# set working direktori i
 WORKDIR /app
 
-COPY ./ /app
+# Installing dependencies
+COPY go.mod go.sum ./
+RUN go mod download
 
-RUN go mod tidy
+# Copying all the files
+COPY . .
 
-# create executable
-RUN go build -o beapi
+# Starting our application
+CMD ["go", "run", "main.go"]
 
-# run executable file
-CMD ["./beapi"]
+# Exposing server port
+EXPOSE 8080
