@@ -37,7 +37,7 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 
 	e.GET("/", func(c echo.Context) error {
 		return c.JSON(http.StatusOK, map[string]any{
-			"==message": "Welcome to kelompok 1 Group Project3==",
+			"===message": "Welcome to kelompok 1 Group Project3==",
 		})
 	})
 }
