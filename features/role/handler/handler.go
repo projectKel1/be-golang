@@ -62,7 +62,7 @@ func (handler *RoleHandler) GetAllRole(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, helpers.WebResponse(http.StatusInternalServerError, "error read data", nil))
 	}
 
-	return c.JSON(http.StatusOK, helpers.WebResponse(http.StatusOK, "success read datahandler", roleResponse))
+	return c.JSON(http.StatusOK, helpers.WebResponse(http.StatusOK, "success read all roles", roleResponse))
 }
 
 func (handler *RoleHandler) UpdateRole(c echo.Context) error {
