@@ -13,6 +13,10 @@ import (
 	_companyData "group-project-3/features/company/data"
 	_companyHandler "group-project-3/features/company/handler"
 	_companyService "group-project-3/features/company/service"
+
+	_userDetailData "group-project-3/features/userDetail/data"
+	_userDetailHandler "group-project-3/features/userDetail/handler"
+	_userDetailService "group-project-3/features/userDetail/service"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -32,6 +36,10 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 	companyService := _companyService.New(companyData)
 	companyHandlerAPI := _companyHandler.New(companyService)
 
+	userDetailData := _userDetailData.New(db)
+	userDetailService := _userDetailService.New(userDetailData)
+	userDetailHandlerAPI := _userDetailHandler.New(userDetailService)
+
 	//Authentikasi
 	e.POST("/login", userHandlerAPI.Login)
 
@@ -48,6 +56,11 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 	e.GET("/companies", companyHandlerAPI.GetAllCompany, middlewares.JWTMiddleware())
 	e.GET("/companies/:company_id", companyHandlerAPI.GetCompanyId, middlewares.JWTMiddleware())
 	e.PUT("/companies/:company_id", companyHandlerAPI.UpdateById, middlewares.JWTMiddleware())
+
+	e.PUT("/user-details/:user_id", userDetailHandlerAPI.Update, middlewares.JWTMiddleware())
+	e.GET("/user-details/:user_id", userDetailHandlerAPI.FindById, middlewares.JWTMiddleware())
+	e.DELETE("/user-details/:user_id", userDetailHandlerAPI.Delete, middlewares.JWTMiddleware())
+	e.POST("/user-details", userDetailHandlerAPI.Create, middlewares.JWTMiddleware())
 
 	e.GET("/", func(c echo.Context) error {
 		return c.JSON(http.StatusOK, map[string]any{
