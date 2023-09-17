@@ -41,6 +41,7 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
+            sudo docker login
             sudo docker stop teguh26/hris_kelompok1:latest
             sudo docker rm teguh26/hris_kelompok1:latest
             sudo docker rmi ${{ secrets.DOCKERHUB_USERNAME }}/hris_kelompok1:latest
