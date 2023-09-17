@@ -38,7 +38,7 @@ func (service *userService) Login(email string, password string) (dataLogin user
 	if err != nil {
 		return user.Core{}, "", err
 	}
-	token, err = middlewares.CreateToken(dataLogin.ID)
+	token, err = middlewares.CreateToken(dataLogin.ID, dataLogin.Role.RoleName, dataLogin.Level.Level, dataLogin.Company.CompanyName)
 	if err != nil {
 		return user.Core{}, "", err
 	}
@@ -65,4 +65,16 @@ func (service *userService) GetAll(pageNumber int, pageSize int) ([]user.Core, e
 func (service *userService) UpdateProfile(id int, input user.UserDetailEntity) error {
 	err := service.userData.UpdateProfile(id, input)
 	return err
+}
+
+// UpdateOtherProfile implements user.UserServiceInterface.
+func (service *userService) UpdateOtherProfile(id int, input user.UserDetailEntity) error {
+	err := service.userData.UpdateOtherProfile(id, input)
+	return err
+}
+
+// SelectOtherProfile implements user.UserServiceInterface.
+func (service *userService) SelectOtherProfile(id int) (user.Core, error) {
+	result, err := service.userData.SelectOtherProfile(id)
+	return result, err
 }

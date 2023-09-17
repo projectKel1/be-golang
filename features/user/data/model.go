@@ -11,8 +11,8 @@ import (
 )
 
 type User struct {
-	ID        uint `gorm:"primaryKey"`
-	UserId    uint
+	ID uint `gorm:"primaryKey"`
+	// UserId    uint
 	Fullname  string `gorm:"type:varchar(100)"`
 	Email     string `gorm:"unique;size:255"`
 	Password  string `gorm:"type:varchar(255);unique_index"`

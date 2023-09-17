@@ -81,7 +81,9 @@ type UserDataInterface interface {
 	Login(email string, password string) (dataLogin Core, err error)
 	SelectProfile(id int) (Core, error)
 	UpdateProfile(id int, input UserDetailEntity) error
+	UpdateOtherProfile(id int, input UserDetailEntity) error
 	SelectAll(pageNumber int, pageSize int) ([]Core, error)
+	SelectOtherProfile(id int) (Core, error)
 }
 
 type UserServiceInterface interface {
@@ -89,5 +91,7 @@ type UserServiceInterface interface {
 	Login(email string, password string) (dataLogin Core, token string, err error)
 	GetProfile(id int) (Core, error)
 	UpdateProfile(id int, input UserDetailEntity) error
+	UpdateOtherProfile(id int, input UserDetailEntity) error
 	GetAll(pageNumber int, pageSize int) ([]Core, error)
+	SelectOtherProfile(id int) (Core, error)
 }
