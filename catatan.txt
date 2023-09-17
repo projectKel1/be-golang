@@ -30,4 +30,5 @@ docker run -it teguh26/hris_kelompok1 sh
 
 gcloud run :gcloud run deploy hris-kelompok-1 --image teguh26/hris_kelompok1 --project altera-academy
 
-ssh aristeguh278@34.101.39.199
+ssh aristeguh278@34.101.39.199 
+ssh
