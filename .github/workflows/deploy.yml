@@ -41,8 +41,8 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
-            docker stop teguh26/hris_kelompok1:latest
-            docker rm teguh26/hris_kelompok1:latest
-            docker rmi ${{ secrets.DOCKERHUB_USERNAME }}/hris_kelompok1:latest
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/hris_kelompok1:latest
-            docker run -d -p 80:80 -e JWTSECRET=${{ secrets.JWTSECRET }} -e DBUSER=${{ secrets.DBUSER }} -e DBPASS=${{ secrets.DBPASS }} -e DBHOST=${{ secrets.DBHOST }} -e DBPORT=${{ secrets.DBPORT }} -e DBNAME=${{ secrets.DBNAME }} --name be18Container ${{ secrets.DOCKERHUB_USERNAME }}/be18-images:latest
+            sudo docker stop teguh26/hris_kelompok1:latest
+            sudo docker rm teguh26/hris_kelompok1:latest
+            sudo docker rmi ${{ secrets.DOCKERHUB_USERNAME }}/hris_kelompok1:latest
+            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/hris_kelompok1:latest
+            sudo docker run -d -p 80:80 -e JWTSECRET=${{ secrets.JWTSECRET }} -e DBUSER=${{ secrets.DBUSER }} -e DBPASS=${{ secrets.DBPASS }} -e DBHOST=${{ secrets.DBHOST }} -e DBPORT=${{ secrets.DBPORT }} -e DBNAME=${{ secrets.DBNAME }} --name be18Container ${{ secrets.DOCKERHUB_USERNAME }}/be18-images:latest
