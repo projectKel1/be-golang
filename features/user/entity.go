@@ -65,10 +65,12 @@ type UserDataInterface interface {
 	Insert(input Core) error
 	Login(email string, password string) (dataLogin Core, err error)
 	SelectProfile(id int) (Core, error)
+	SelectAll(pageNumber int, pageSize int) ([]Core, error)
 }
 
 type UserServiceInterface interface {
 	Create(input Core) error
 	Login(email string, password string) (dataLogin Core, token string, err error)
 	GetProfile(id int) (Core, error)
+	GetAll(pageNumber int, pageSize int) ([]Core, error)
 }

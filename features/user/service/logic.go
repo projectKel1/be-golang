@@ -50,3 +50,13 @@ func (service *userService) GetProfile(id int) (user.Core, error) {
 	result, err := service.userData.SelectProfile(id)
 	return result, err
 }
+
+// GetAll implements user.UserServiceInterface.
+func (service *userService) GetAll(pageNumber int, pageSize int) ([]user.Core, error) {
+	result, err := service.userData.SelectAll(pageNumber, pageSize)
+
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}

@@ -53,6 +53,7 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 
 	e.POST("/users", userHandlerAPI.CreateUser)
 	e.GET("/my-profile", userHandlerAPI.GetProfileUser, middlewares.JWTMiddleware())
+	e.GET("/users", userHandlerAPI.GetAllUser)
 
 	e.POST("/roles", roleHandlerAPI.CreateRole, middlewares.JWTMiddleware())
 	e.GET("/roles", roleHandlerAPI.GetAllRole, middlewares.JWTMiddleware())

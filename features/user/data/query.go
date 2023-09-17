@@ -124,3 +124,42 @@ func (repo *userQuery) SelectProfile(id int) (user.Core, error) {
 
 	return usersCore, nil
 }
+
+// SelectAll implements user.UserDataInterface.
+func (repo *userQuery) SelectAll(pageNumber int, pageSize int) ([]user.Core, error) {
+	var userData []User
+	var dataRole _role.Role
+	var dataLevel _level.EmployeeLevel
+	var dataCompany _company.Company
+	offset := (pageNumber - 1) * pageSize
+
+	tx := repo.db.Offset(offset).Limit(pageSize).Find(&userData)
+
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+
+	var userCore []user.Core
+
+	for _, value := range userData {
+
+		repo.db.Raw("SELECT *FROM roles WHERE id=?", value.RoleID).Scan(&dataRole)
+		repo.db.Raw("SELECT *FROM employee_levels WHERE id=?", value.LevelID).Scan(&dataLevel)
+		repo.db.Raw("SELECT *FROM companies WHERE id=?", value.CompanyID).Scan(&dataCompany)
+
+		fmt.Println("LEVEL ", value.CreatedAt)
+		userCore = append(userCore, user.Core{
+			ID:          value.ID,
+			Fullame:     value.Fullname,
+			UrlPhoto:    value.UrlPhoto,
+			RoleName:    dataRole.RoleName,
+			LevelName:   dataLevel.Level,
+			CompanyName: dataCompany.Name,
+			Email:       value.Email,
+			CreatedAt:   value.CreatedAt,
+			UpdatedAt:   value.UpdatedAt,
+		})
+	}
+	return userCore, nil
+
+}

@@ -6,6 +6,7 @@ import (
 	"group-project-3/features/user"
 	"group-project-3/helpers"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/labstack/echo/v4"
@@ -114,4 +115,37 @@ func (handler *UserHandler) GetProfileUser(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, helpers.WebResponse(http.StatusOK, "success read data", usersResponse))
+}
+
+func (handler *UserHandler) GetAllUser(c echo.Context) error {
+	pageNumber, _ := strconv.Atoi(c.QueryParam("page"))
+	pageSize, _ := strconv.Atoi(c.QueryParam("size"))
+
+	if pageNumber <= 0 {
+		pageNumber = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+
+	result, err := handler.userService.GetAll(int(pageNumber), int(pageSize))
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, helpers.WebResponse(http.StatusInternalServerError, "error read data", nil))
+	}
+	var userResponse []UserResponse
+	for _, value := range result {
+
+		userResponse = append(userResponse, UserResponse{
+			ID:          value.ID,
+			Fullname:    value.Fullame,
+			Email:       value.Email,
+			RoleName:    value.RoleName,
+			UrlPhoto:    value.UrlPhoto,
+			LevelName:   value.LevelName,
+			CompanyName: value.CompanyName,
+			CreatedAt:   value.CreatedAt,
+			UpdatedAt:   value.UpdatedAt,
+		})
+	}
+	return c.JSON(http.StatusOK, helpers.WebResponse(http.StatusOK, "success read all users", userResponse))
 }

@@ -3,13 +3,16 @@ package handler
 import "time"
 
 type UserResponse struct {
-	ID        uint      `json:"id"`
-	Fullname  string    `json:"fullname"`
-	Email     string    `json:"email"`
-	RoleID    int       `json:"role_id"`
-	Address   string    `json:"address"`
-	Status    string    `json:"status"`
-	Token     string    `json:"token"`
+	ID          uint   `json:"id"`
+	Fullname    string `json:"fullname"`
+	Email       string `json:"email"`
+	UrlPhoto    string `json:"url_photo"`
+	RoleName    string `json:"role_name"`
+	LevelName   string `json:"level_name"`
+	CompanyName string `json:"company_name"`
+	// Level     string    `json:"level"`
+	// Address   string    `json:"address"`
+	// Status    string    `json:"status"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
