@@ -17,6 +17,10 @@ import (
 	_userDetailData "group-project-3/features/userDetail/data"
 	_userDetailHandler "group-project-3/features/userDetail/handler"
 	_userDetailService "group-project-3/features/userDetail/service"
+
+	_employeeLevelData "group-project-3/features/employeeLevel/data"
+	_employeeLevelHandler "group-project-3/features/employeeLevel/handler"
+	_employeeLevelService "group-project-3/features/employeeLevel/service"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -40,6 +44,10 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 	userDetailService := _userDetailService.New(userDetailData)
 	userDetailHandlerAPI := _userDetailHandler.New(userDetailService)
 
+	employeeLevelData := _employeeLevelData.New(db)
+	employeeLevelService := _employeeLevelService.New(employeeLevelData)
+	employeeLevelHandlerAPI := _employeeLevelHandler.New(employeeLevelService)
+
 	//Authentikasi
 	e.POST("/login", userHandlerAPI.Login)
 
@@ -61,6 +69,12 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 	e.GET("/user-details/:user_id", userDetailHandlerAPI.FindById, middlewares.JWTMiddleware())
 	e.DELETE("/user-details/:user_id", userDetailHandlerAPI.Delete, middlewares.JWTMiddleware())
 	e.POST("/user-details", userDetailHandlerAPI.Create, middlewares.JWTMiddleware())
+
+	e.PUT("/employee-levels/:id", employeeLevelHandlerAPI.Update, middlewares.JWTMiddleware())
+	e.GET("/employee-levels/:id", employeeLevelHandlerAPI.FindById, middlewares.JWTMiddleware())
+	e.DELETE("/employee-levels/:id", employeeLevelHandlerAPI.Delete, middlewares.JWTMiddleware())
+	e.POST("/employee-levels", employeeLevelHandlerAPI.Create, middlewares.JWTMiddleware())
+	e.GET("/employee-levels", employeeLevelHandlerAPI.FindAll, middlewares.JWTMiddleware())
 
 	e.GET("/", func(c echo.Context) error {
 		return c.JSON(http.StatusOK, map[string]any{

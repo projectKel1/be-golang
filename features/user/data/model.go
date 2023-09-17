@@ -1,7 +1,9 @@
 package data
 
 import (
+	_employeeLevelData "group-project-3/features/employeeLevel/data"
 	"group-project-3/features/user"
+	_userDetailData "group-project-3/features/userDetail/data"
 	"time"
 
 	"gorm.io/gorm"
@@ -40,6 +42,9 @@ type User struct {
 	UrlPhoto        string
 	EmergencyPhone  string
 	CompanyId       uint
+	EmployeeLevelID uint
+	EmployeeLevel   _employeeLevelData.EmployeeLevel
+	UserDetail      _userDetailData.UserDetail
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
 	DeletedAt       gorm.DeletedAt `gorm:"index"`
