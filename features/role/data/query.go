@@ -85,3 +85,19 @@ func (repo *roleQuery) DeleteRole(idRole int) error {
 	result = repo.db.Exec("DELETE FROM roles WHERE id=?", idRole)
 	return nil
 }
+
+// SelectById implements role.RoleDataInterface.
+func (repo *roleQuery) SelectById(id uint) (role.Core, error) {
+	var result Role
+	tx := repo.db.Raw("SELECT *FROM roles WHERE id=?", id).Scan(&result)
+	fmt.Println(tx)
+	if tx.Error != nil {
+		return role.Core{}, tx.Error
+	}
+	if tx.RowsAffected == 0 {
+		return role.Core{}, errors.New("data not found")
+	}
+
+	resultCore := ModelToCore(result)
+	return resultCore, nil
+}

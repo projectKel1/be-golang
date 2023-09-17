@@ -15,11 +15,13 @@ type Company struct {
 	Email       string
 	Type        string
 	Image       string
-	StartedHour time.Time
-	EndedHour   time.Time
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	DeletedAt   gorm.DeletedAt `gorm:"index"`
+	StartedHour string
+	EndedHour   string
+	// StartedHour time.Time
+	// EndedHour   time.Time
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
 func CoreToModel(dataCore company.Core) Company {

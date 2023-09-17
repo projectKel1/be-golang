@@ -18,14 +18,20 @@ docker build -t teguh26/hris_kelompok1:latest --build-arg DBUSER=root --build-ar
 
 docker run -d -it –-rm -p [host_port]:[container_port] --name [container_name] [image_id/image_tag]
 
-contoh : docker run -d -p 8080:8080 -e DBUSER=root -e DBPASS=123 -e DBHOST=34.101.64.219 DBPORT=3306 DBNAME=hris_kelompok1 JWTSECRET=sup3rs3cr3t --name hris_go_container teguh26/hris_kelompok1:latest  
+contoh : docker run -d -p 8080:8080 teguh26/hris_kelompok1:latest  
 push docker registry
-
-
 
 docker login -u teguh26  
 docker push teguh26/hris_kelompok1   
 
 docker run -it teguh26/hris_kelompok1 sh 
 
+sudo docker run teguh26/hris_kelompok1:latest
+
+sudo docker run -d -p 8080:80 teguh26/hris_kelompok1:latest
+
+sudo docker run teguh26/hris_kelompok1:latest
+
+
 gcloud run :gcloud run deploy hris-kelompok-1 --image teguh26/hris_kelompok1 --project altera-academy
+ssh aristeguh278@34.101.39.199

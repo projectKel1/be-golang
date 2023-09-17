@@ -44,3 +44,8 @@ func (service *roleService) DeleteRole(idRole int) error {
 	err := service.roleData.DeleteRole(idRole)
 	return err
 }
+
+// GetById implements role.RoleServiceInterface.
+func (service *roleService) GetById(id uint) (role.Core, error) {
+	return service.roleData.SelectById(id)
+}

@@ -6,17 +6,19 @@ import (
 )
 
 type CompanyRequest struct {
-	Name        string    `json:"name"`
-	Address     string    `json:"address"`
-	Description string    `json:"description"`
-	Email       string    `json:"email"`
-	Type        string    `json:"type"`
-	Image       string    `json:"image"`
-	StartedHour time.Time `json:"started_hour"`
-	EndedHour   time.Time `json:"ended_hour"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
-	DeletedAt   time.Time `json:"deleted_at"`
+	Name        string `json:"name"`
+	Address     string `json:"address"`
+	Description string `json:"description"`
+	Email       string `json:"email"`
+	Type        string `json:"type"`
+	Image       string `json:"image"`
+	StartedHour string `json:"started_hour"`
+	EndedHour   string `json:"ended_hour"`
+	// StartedHour time.Time `json:"started_hour"`
+	// EndedHour   time.Time `json:"ended_hour"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	DeletedAt time.Time `json:"deleted_at"`
 }
 
 func RequestToCore(input CompanyRequest) company.Core {

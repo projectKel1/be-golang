@@ -13,6 +13,10 @@ import (
 	_companyData "group-project-3/features/company/data"
 	_companyHandler "group-project-3/features/company/handler"
 	_companyService "group-project-3/features/company/service"
+
+	_employeeLevelData "group-project-3/features/employeeLevel/data"
+	_employeeLevelHandler "group-project-3/features/employeeLevel/handler"
+	_employeeLevelService "group-project-3/features/employeeLevel/service"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -32,20 +36,30 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 	companyService := _companyService.New(companyData)
 	companyHandlerAPI := _companyHandler.New(companyService)
 
+	employeeLevelData := _employeeLevelData.New(db)
+	employeeLevelService := _employeeLevelService.New(employeeLevelData)
+	employeeLevelHandlerAPI := _employeeLevelHandler.New(employeeLevelService)
+
 	//Authentikasi
 	e.POST("/login", userHandlerAPI.Login)
 
 	e.POST("/users", userHandlerAPI.CreateUser)
 	e.GET("/my-profile", userHandlerAPI.GetProfileUser, middlewares.JWTMiddleware())
+	e.GET("/users", userHandlerAPI.GetAllUser)
 
-	e.POST("/roles", roleHandlerAPI.CreateRole, middlewares.JWTMiddleware())
-	e.GET("/roles", roleHandlerAPI.GetAllRole, middlewares.JWTMiddleware())
+	e.POST("/roles", roleHandlerAPI.CreateRole)
+	e.GET("/roles", roleHandlerAPI.GetAllRole)
 	e.PUT("/roles/:role_id", roleHandlerAPI.UpdateRole, middlewares.JWTMiddleware())
 	e.DELETE("/roles/:role_id", roleHandlerAPI.DeleteRole, middlewares.JWTMiddleware())
 
-	e.POST("/companies", companyHandlerAPI.CreateCompany, middlewares.JWTMiddleware())
+	e.POST("/employee-level", employeeLevelHandlerAPI.CreateEmployeeLevel)
+	e.GET("/employee-level", employeeLevelHandlerAPI.GetAllEmployeeLevel)
+	e.PUT("/employee-level/:level_id", employeeLevelHandlerAPI.UpdateEmployeeLevel)
+	e.DELETE("/employee-level/:level_id", employeeLevelHandlerAPI.DeleteEmployeeLevel)
+
+	e.POST("/companies", companyHandlerAPI.CreateCompany)
 	e.DELETE("/companies/:company_id", companyHandlerAPI.DeleteCompany, middlewares.JWTMiddleware())
-	e.GET("/companies", companyHandlerAPI.GetAllCompany, middlewares.JWTMiddleware())
+	e.GET("/companies", companyHandlerAPI.GetAllCompany)
 	e.GET("/companies/:company_id", companyHandlerAPI.GetCompanyId, middlewares.JWTMiddleware())
 	e.PUT("/companies/:company_id", companyHandlerAPI.UpdateById, middlewares.JWTMiddleware())
 

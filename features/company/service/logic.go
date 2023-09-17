@@ -1,7 +1,6 @@
 package service
 
 import (
-	"errors"
 	"group-project-3/features/company"
 
 	"github.com/go-playground/validator/v10"
@@ -14,10 +13,10 @@ type companyService struct {
 
 // Create implements company.CompanyServiceInterface.
 func (service *companyService) Create(input company.Core) error {
-	errValidate := service.validate.Struct(input)
-	if errValidate != nil {
-		return errors.New("validation error" + errValidate.Error())
-	}
+	// errValidate := service.validate.Struct(input)
+	// if errValidate != nil {
+	// 	return errors.New("validation error" + errValidate.Error())
+	// }
 
 	err := service.companyData.Insert(input)
 	return err

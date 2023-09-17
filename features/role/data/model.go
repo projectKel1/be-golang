@@ -8,8 +8,8 @@ import (
 )
 
 type Role struct {
-	ID        uint `gorm:"primaryKey"`
-	RoleName  string
+	ID        uint   `gorm:"primaryKey"`
+	RoleName  string `gorm:"type:varchar(55)"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`

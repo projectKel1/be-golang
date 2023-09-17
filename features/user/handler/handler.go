@@ -3,9 +3,11 @@ package handler
 import (
 	"fmt"
 	"group-project-3/app/middlewares"
+	"group-project-3/features/role"
 	"group-project-3/features/user"
 	"group-project-3/helpers"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/labstack/echo/v4"
@@ -13,7 +15,12 @@ import (
 
 type UserHandler struct {
 	userService user.UserServiceInterface
+	roleService role.RoleServiceInterface
 }
+
+// type RoleHandler struct {
+// 	roleService role.RoleServiceInterface
+// }
 
 func New(service user.UserServiceInterface) *UserHandler {
 	return &UserHandler{
@@ -32,10 +39,21 @@ func (handler *UserHandler) CreateUser(c echo.Context) error {
 	userCore := RequestToCore(*userInput)
 	err := handler.userService.Create(userCore)
 	if err != nil {
+
 		if strings.Contains(err.Error(), "validation") {
 			return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusBadRequest, err.Error(), nil))
 		} else if strings.Contains(err.Error(), "' for key 'users.email'") {
 			return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusConflict, "User with this email already exists", nil))
+		} else if strings.Contains(err.Error(), "Cannot add or update a child row: a foreign key constraint fails (`hris_kelompok1_1`.`users`, CONSTRAINT `fk_users_role` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`))") {
+			return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusConflict, "Role with this id is not found", err.Error()))
+		} else if strings.Contains(err.Error(), "Error 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`hris_kelompok1_1`.`users`, CONSTRAINT `fk_users_level` FOREIGN KEY (`level_id`) REFERENCES `employee_levels` (`id`))") {
+			return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusConflict, "Level with this id is not found", err.Error()))
+		} else if strings.Contains(err.Error(), "Error 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`hris_kelompok1_1`.`users`, CONSTRAINT `fk_users_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`))") {
+			return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusConflict, "Company with this id is not found", err.Error()))
+		} else if userInput.LevelID == 0 {
+			return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusBadRequest, "Level Id is required", nil))
+		} else if userInput.CompanyID == 0 {
+			return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusBadRequest, "Company Id is required", nil))
 		} else {
 			return c.JSON(http.StatusInternalServerError, helpers.WebResponse(http.StatusInternalServerError, "error insert data", nil))
 
@@ -52,7 +70,9 @@ func (handler *UserHandler) Login(c echo.Context) error {
 	}
 
 	dataLogin, token, err := handler.userService.Login(userInput.Email, userInput.Password)
+
 	if err != nil {
+
 		if strings.Contains(err.Error(), "validation") {
 			return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusBadRequest, err.Error(), nil))
 		} else {
@@ -60,46 +80,82 @@ func (handler *UserHandler) Login(c echo.Context) error {
 
 		}
 	}
-	fmt.Println("ROLE", dataLogin)
+
 	response := LoginResponse{
-		ID:     dataLogin.ID,
-		Email:  dataLogin.Email,
-		RoleID: int(dataLogin.RoleID),
-		Status: dataLogin.Status,
-		Token:  token,
+		ID:          dataLogin.ID,
+		Email:       dataLogin.Email,
+		RoleName:    dataLogin.Role.RoleName,
+		CompanyName: dataLogin.Company.CompanyName,
+		Level:       dataLogin.Level.Level,
+		Token:       token,
 	}
 	return c.JSON(http.StatusOK, helpers.WebResponse(http.StatusCreated, "success login", response))
 }
 
 func (handler *UserHandler) GetProfileUser(c echo.Context) error {
-	idToken := middlewares.ExtractTokenUserId(c)
-	fmt.Println("id:", idToken)
+	idToken, _ := middlewares.ExtractTokenUserId(c)
+
+	// fmt.Println("id TOKEN:", idToken)
+
 	result, err := handler.userService.GetProfile(idToken)
+	// fmt.Println("ROLE :", result)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, helpers.WebResponse(http.StatusInternalServerError, "error read data", nil))
 	}
 	// mapping dari struct core to struct response
+
 	usersResponse := ProfileResponse{
-		ID:              result.ID,
-		Fullname:        result.Fullame,
-		Email:           result.Email,
-		Password:        result.Password,
-		PhoneNumber:     result.PhoneNumber,
-		Address:         result.Address,
-		UrlPhoto:        result.UrlPhoto,
-		Gender:          result.Gender,
-		Status:          result.Status,
-		RoleID:          int(result.RoleID),
-		CompanyID:       int(result.CompanyId),
-		NoNik:           result.NoNik,
-		NoKK:            result.NoKK,
-		NoBpjs:          result.NoBpjs,
-		EmergencyName:   result.EmergencyName,
-		EmergencyStatus: result.EmergencyStatus,
-		EmergencyPhone:  result.EmergencyPhone,
-		CreatedAt:       result.CreatedAt,
-		UpdatedAt:       result.UpdatedAt,
+		ID:          result.ID,
+		Fullname:    result.Fullame,
+		Email:       result.Email,
+		Password:    result.Password,
+		UrlPhoto:    result.UrlPhoto,
+		RoleName:    result.Role.RoleName,
+		Level:       result.Level.Level,
+		CompanyName: result.Company.CompanyName,
+		NoNik:       result.UserDetail.Nik,
+		PhoneNumber: result.UserDetail.PhoneNumber,
+		Gender:      result.UserDetail.Gender,
+		Address:     result.UserDetail.Address,
+		// RoleID: int(result.RoleID),
+		// CompanyID:       int(result.CompanyId),
+
+		CreatedAt: result.CreatedAt,
+		UpdatedAt: result.UpdatedAt,
 	}
 
 	return c.JSON(http.StatusOK, helpers.WebResponse(http.StatusOK, "success read data", usersResponse))
+}
+
+func (handler *UserHandler) GetAllUser(c echo.Context) error {
+	pageNumber, _ := strconv.Atoi(c.QueryParam("page"))
+	pageSize, _ := strconv.Atoi(c.QueryParam("size"))
+
+	if pageNumber <= 0 {
+		pageNumber = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+
+	result, err := handler.userService.GetAll(int(pageNumber), int(pageSize))
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, helpers.WebResponse(http.StatusInternalServerError, "error read data", nil))
+	}
+	var userResponse []UserResponse
+	for _, value := range result {
+
+		userResponse = append(userResponse, UserResponse{
+			ID:          value.ID,
+			Fullname:    value.Fullame,
+			Email:       value.Email,
+			RoleName:    value.RoleName,
+			UrlPhoto:    value.UrlPhoto,
+			LevelName:   value.LevelName,
+			CompanyName: value.CompanyName,
+			CreatedAt:   value.CreatedAt,
+			UpdatedAt:   value.UpdatedAt,
+		})
+	}
+	return c.JSON(http.StatusOK, helpers.WebResponse(http.StatusOK, "success read all users", userResponse))
 }

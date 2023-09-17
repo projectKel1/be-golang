@@ -34,6 +34,10 @@ func (handler *companyHandler) CreateCompany(c echo.Context) error {
 			return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusBadRequest, err.Error(), nil))
 		} else if strings.Contains(err.Error(), "' for key 'company.name'") {
 			return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusConflict, "Company with this name already exists", nil))
+		} else if strings.Contains(err.Error(), "Error 1292 (22007): Incorrect datetime value: '0000-00-00' for column 'started_hour' at row ") {
+			return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusConflict, "Error Input started hour", nil))
+		} else if strings.Contains(err.Error(), "Error 1292 (22007): Incorrect datetime value: '0000-00-00' for column 'ended_hour' at row ") {
+			return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusConflict, "Error Input ended hour", nil))
 		} else {
 			return c.JSON(http.StatusInternalServerError, helpers.WebResponse(http.StatusInternalServerError, "error insert data", nil))
 
