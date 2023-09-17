@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"group-project-3/app/middlewares"
+	_company "group-project-3/features/company/data"
+	_level "group-project-3/features/employeeLevel/data"
 	_role "group-project-3/features/role/data"
 	"group-project-3/features/user"
 
@@ -42,21 +44,49 @@ func (repo *userQuery) Insert(input user.Core) error {
 // Login implements user.UserDataInterface.
 func (repo *userQuery) Login(email string, password string) (dataLogin user.Core, err error) {
 	var data User
-	repo.db.Raw("SELECT id,role_id, email,password FROM users WHERE email=?", email).Scan(&data)
+	var dataRole _role.Role
+	var dataCompany _company.Company
+	var dataLevel _level.EmployeeLevel
+
+	repo.db.Raw("SELECT * FROM users WHERE email=?", email).Scan(&data)
 	samePassword := middlewares.CheckPassword(password, data.Password)
 	// hashedPassword, err := middlewares.HashedPassword(password)
 	// fmt.Println("HASHED PASSWORD", hashedPassword)
 
 	if samePassword {
-		tx := repo.db.Raw("SELECT id,role_id,status,company_id,url_photo,gender, email,password FROM users WHERE email=? AND password=?", email, data.Password).Scan(&data)
+		// tx := repo.db.Preload("Role").Where("email = ? AND password=?", email, password).Find(&data)
+		query := `
+		SELECT users.id,users.email,users.company_id,users.role_id,users.level_id,users.company_id ,roles.role_name,companies.name FROM users
+		 INNER JOIN roles ON users.role_id= roles.id 
+		 INNER JOIN companies ON users.company_id=companies.id 
+		 WHERE users.email=? AND password=?
+		`
+		tx := repo.db.Raw(query, email, data.Password).Scan(&data)
+
+		repo.db.Raw("SELECT *FROM roles WHERE id=?", data.RoleID).Scan(&dataRole)
+		repo.db.Raw("SELECT *FROM companies WHERE id=?", data.CompanyID).Scan(&dataCompany)
+		repo.db.Raw("SELECT *FROM employee_levels WHERE id=?", data.LevelID).Scan(&dataLevel)
+
+		fmt.Println("LEVEL NAME ", dataLevel.Level)
 		if tx.Error != nil {
 			return user.Core{}, tx.Error
 		}
-		fmt.Println("SAME PASSWORD", data.RoleID)
+		// if tx.Error != nil {
+		// 	return
+		// }
+		// fmt.Println("DATA USERS DETAIL", dataUserDetail)
+
 		if tx.RowsAffected == 0 {
 			return user.Core{}, errors.New("data not found")
 		}
+		fmt.Println("LEVEL", dataLevel.Level)
+		fmt.Println("Company", dataCompany.Name)
+		fmt.Println("DARSADASTA", data)
 		dataLogin = ModelToCore(data)
+		dataLogin.Role.RoleName = dataRole.RoleName
+		dataLogin.Company.CompanyName = dataCompany.Name
+		dataLogin.Level.Level = dataLevel.Level
+		fmt.Println("COA", dataLogin.Level.Level)
 	} else {
 		return user.Core{}, errors.New("data not found")
 	}

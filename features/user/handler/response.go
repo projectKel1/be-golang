@@ -15,22 +15,26 @@ type UserResponse struct {
 }
 
 type LoginResponse struct {
-	ID     uint   `json:"id"`
-	Email  string `json:"email"`
-	RoleID int    `json:"role_id"`
-	Status string `json:"status"`
-	Token  string `json:"token"`
+	ID          uint   `json:"id"`
+	Email       string `json:"email"`
+	RoleName    string `json:"role_name"`
+	CompanyName string `json:"company_name"`
+	Level       string `json:"level"`
+	Token       string `json:"token"`
 }
 
 type ProfileResponse struct {
-	ID              uint      `json:"id"`
-	Fullname        string    `json:"fullname"`
-	Email           string    `json:"email"`
-	Password        string    `json:"password"`
-	Gender          string    `json:"gender"`
-	Address         string    `json:"address"`
-	PhoneNumber     string    `json:"phone_number"`
-	RoleID          int       `json:"role_id"`
+	ID          uint   `json:"id"`
+	Fullname    string `json:"fullname"`
+	Email       string `json:"email"`
+	Password    string `json:"password"`
+	Gender      string `json:"gender"`
+	Address     string `json:"address"`
+	PhoneNumber string `json:"phone_number"`
+	RoleName    string `json:"role_name"`
+	CompanyName string `json:"company_name"`
+	Level       string `json:"level"`
+	// RoleID          int       `json:"role_id"`
 	CompanyID       int       `json:"company_id"`
 	UrlPhoto        string    `json:"url_photo"`
 	Status          string    `json:"status"`
