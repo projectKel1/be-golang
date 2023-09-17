@@ -15,8 +15,8 @@ type Company struct {
 	Email       string
 	Type        string
 	Image       string
-	StartedHour time.Time
-	EndedHour   time.Time
+	StartedHour string
+	EndedHour   string
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	DeletedAt   gorm.DeletedAt `gorm:"index"`

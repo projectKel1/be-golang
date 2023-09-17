@@ -60,3 +60,9 @@ func (service *userService) GetAll(pageNumber int, pageSize int) ([]user.Core, e
 	}
 	return result, nil
 }
+
+// Update implements user.UserServiceInterface.
+func (service *userService) UpdateProfile(id int, input user.UserDetailEntity) error {
+	err := service.userData.UpdateProfile(id, input)
+	return err
+}

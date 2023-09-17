@@ -8,6 +8,7 @@ import (
 	_level "group-project-3/features/employeeLevel/data"
 	_role "group-project-3/features/role/data"
 	"group-project-3/features/user"
+	_userDetail "group-project-3/features/userDetail/data"
 
 	"gorm.io/gorm"
 )
@@ -95,33 +96,45 @@ func (repo *userQuery) Login(email string, password string) (dataLogin user.Core
 }
 
 // SelectProfile implements user.UserDataInterface.
-func (repo *userQuery) SelectProfile(id int) (user.Core, error) {
+func (repo *userQuery) SelectProfile(id int) (dataProfile user.Core, err error) {
 	var usersData User
 	var roleData _role.Role
+	var companyData _company.Company
+	var levelData _level.EmployeeLevel
+	var userDetailData _userDetail.UserDetail
 	tx := repo.db.First(&usersData, id).Scan(&usersData) // select * from users;
-	txRole := repo.db.Raw("SELECT * FROM roles WHERE id=?", usersData.RoleID).Scan(&roleData)
-	fmt.Println("ROLE DATA", roleData)
-
-	fmt.Println("role", txRole)
+	repo.db.Raw("SELECT * FROM roles WHERE id=?", usersData.RoleID).Scan(&roleData)
+	repo.db.Raw("SELECT * FROM companies WHERE id=?", usersData.CompanyID).Scan(&companyData)
+	repo.db.Raw("SELECT * FROM employee_levels WHERE id=?", usersData.CompanyID).Scan(&levelData)
+	repo.db.Raw("SELECT * FROM user_details WHERE user_id=?", usersData.ID).Scan(&userDetailData)
+	fmt.Println("user details", &userDetailData)
+	// usersData.Role.RoleName = roleData.RoleName
+	// dataProfile.Role.RoleName = roleData.RoleName
+	// usersData.Role.RoleName = roleData.RoleName
+	fmt.Println("roleku", usersData.Role)
 
 	if tx.Error != nil {
-		return user.Core{}, tx.Error
+		return dataProfile, tx.Error
 	}
 	if tx.RowsAffected == 0 {
-		return user.Core{}, errors.New("data not found")
+		return dataProfile, errors.New("data not found")
 	}
 
-	// if txRole.Error != nil {
-	// 	return user.Core{}, tx.Error
-	// }
-	// if txRole.RowsAffected == 0 {
-	// 	return user.Core{}, errors.New("data role not found")
-	// }
-
-	// fmt.Println("users:", usersData)
 	//mapping dari struct gorm model ke struct core (entity)
 	var usersCore = ModelToCore(usersData)
-
+	usersCore.Role.RoleName = roleData.RoleName
+	usersCore.Company.CompanyName = companyData.Name
+	usersCore.Level.Level = levelData.Level
+	usersCore.UserDetail.Nik = userDetailData.Nik
+	usersCore.UserDetail.NoKK = userDetailData.NoKK
+	usersCore.UserDetail.Npwp = userDetailData.Npwp
+	usersCore.UserDetail.Address = userDetailData.Address
+	usersCore.UserDetail.PhoneNumber = userDetailData.PhoneNumber
+	usersCore.UserDetail.Gender = string(userDetailData.Gender)
+	usersCore.UserDetail.Bpjs = userDetailData.NoBPJS
+	usersCore.UserDetail.EmergencyName = userDetailData.EmergencyName
+	usersCore.UserDetail.EmergencyStatus = userDetailData.EmergencyStatus
+	usersCore.UserDetail.EmergencyPhone = userDetailData.EmergencyPhone
 	return usersCore, nil
 }
 
@@ -147,7 +160,7 @@ func (repo *userQuery) SelectAll(pageNumber int, pageSize int) ([]user.Core, err
 		repo.db.Raw("SELECT *FROM employee_levels WHERE id=?", value.LevelID).Scan(&dataLevel)
 		repo.db.Raw("SELECT *FROM companies WHERE id=?", value.CompanyID).Scan(&dataCompany)
 
-		fmt.Println("LEVEL ", value.CreatedAt)
+		fmt.Println("Status ", value.Status)
 		userCore = append(userCore, user.Core{
 			ID:          value.ID,
 			Fullame:     value.Fullname,
@@ -155,6 +168,7 @@ func (repo *userQuery) SelectAll(pageNumber int, pageSize int) ([]user.Core, err
 			RoleName:    dataRole.RoleName,
 			LevelName:   dataLevel.Level,
 			CompanyName: dataCompany.Name,
+			Status:      value.Status,
 			Email:       value.Email,
 			CreatedAt:   value.CreatedAt,
 			UpdatedAt:   value.UpdatedAt,
@@ -162,4 +176,22 @@ func (repo *userQuery) SelectAll(pageNumber int, pageSize int) ([]user.Core, err
 	}
 	return userCore, nil
 
+}
+
+// Update implements user.UserDataInterface.
+func (repo *userQuery) UpdateProfile(id int, input user.UserDetailEntity) error {
+	if input.UrlPhoto == "" {
+		input.UrlPhoto = "https://ui-avatars.com/api/?name=" + input.Fullame
+	}
+	fmt.Println("EMERGENCY NAME", input.Nik)
+	hashedPassword, _ := middlewares.HashedPassword(input.Password)
+	tx := repo.db.Exec("update users SET fullname=?,email=?,password=?,url_photo=? WHERE id=?", input.Fullame, input.Email, hashedPassword, input.UrlPhoto, &id)
+	txDetail := repo.db.Exec("UPDATE user_details SET address=?,gender=?,phone_number=?,nik=?,no_kk=?,no_bpjs=?,npwp=?,emergency_name=?,emergency_status=?,emergency_phone=? WHERE user_id=?", input.Address, input.Gender, input.PhoneNumber, input.Nik, input.NoKK, input.NoBPJS, input.Npwp, input.EmergencyName, input.EmergencyStatus, input.EmergencyPhone, &id)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	if txDetail.Error != nil {
+		return txDetail.Error
+	}
+	return nil
 }

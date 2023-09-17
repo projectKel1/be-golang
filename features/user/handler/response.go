@@ -7,6 +7,7 @@ type UserResponse struct {
 	Fullname    string `json:"fullname"`
 	Email       string `json:"email"`
 	UrlPhoto    string `json:"url_photo"`
+	Status      string `json:"status"`
 	RoleName    string `json:"role_name"`
 	LevelName   string `json:"level_name"`
 	CompanyName string `json:"company_name"`
@@ -31,16 +32,18 @@ type ProfileResponse struct {
 	Fullname    string `json:"fullname"`
 	Email       string `json:"email"`
 	Password    string `json:"password"`
+	Status      string `json:"status"`
 	Gender      string `json:"gender"`
 	Address     string `json:"address"`
 	PhoneNumber string `json:"phone_number"`
 	RoleName    string `json:"role_name"`
 	CompanyName string `json:"company_name"`
 	Level       string `json:"level"`
+
 	// RoleID          int       `json:"role_id"`
-	CompanyID       int       `json:"company_id"`
-	UrlPhoto        string    `json:"url_photo"`
-	Status          string    `json:"status"`
+	CompanyID int    `json:"company_id"`
+	UrlPhoto  string `json:"url_photo"`
+
 	NoNik           string    `json:"no_nik"`
 	NoKK            string    `json:"no_nokk"`
 	NoBpjs          string    `json:"no_bpjs"`

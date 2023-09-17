@@ -10,7 +10,7 @@ import (
 type UserDetail struct {
 	ID              uint   `gorm:"primaryKey"`
 	UserID          uint   `gorm:"column:user_id"`
-	Gender          string `gorm:"type:enum('M','F');column:team;default:M"`
+	Gender          string `gorm:"type:enum('M','F');column:gender;default:M"`
 	Address         string `gorm:"column:address"`
 	Nik             string `gorm:"column:nik"`
 	NoKK            string `gorm:"column:no_kk"`

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"group-project-3/features/company"
 	"group-project-3/helpers"
 	"net/http"
@@ -122,11 +123,13 @@ func (handler *companyHandler) GetCompanyId(c echo.Context) error {
 
 func (handler *companyHandler) UpdateById(c echo.Context) error {
 	userInput := new(CompanyRequest)
+
 	id := c.Param("company_id")
 	idParam, errConv := strconv.Atoi(id)
 	if errConv != nil {
 		return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusBadRequest, "error data id. data not valid", nil))
 	}
+	fmt.Println("COMPANY INPUT", userInput)
 	errBind := c.Bind(&userInput)
 	if errBind != nil {
 		return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusBadRequest, "error bind data. data not valid", nil))

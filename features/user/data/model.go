@@ -10,22 +10,9 @@ import (
 	"gorm.io/gorm"
 )
 
-type Status string
-
-const (
-	ACTIVE     Status = "Active"
-	NOT_ACTIVE Status = "Non-Active"
-)
-
-type Gender string
-
-const (
-	Male   Gender = "M"
-	Female Gender = "F"
-)
-
 type User struct {
-	ID        uint   `gorm:"primaryKey"`
+	ID        uint `gorm:"primaryKey"`
+	UserId    uint
 	Fullname  string `gorm:"type:varchar(100)"`
 	Email     string `gorm:"unique;size:255"`
 	Password  string `gorm:"type:varchar(255);unique_index"`
@@ -36,7 +23,7 @@ type User struct {
 	ManagerID *uint
 	Manager   *User
 	UrlPhoto  string
-	Status    Status
+	Status    string `gorm:"type:enum('Active','Non-Active');column:status;default:Non-Active"`
 	LevelID   uint
 	Level     _levelData.EmployeeLevel
 	CreatedAt time.Time
@@ -47,27 +34,16 @@ type User struct {
 func CoreToModel(dataCore user.Core) User {
 	return User{
 		// ID:               dataCore.,
-		Fullname: dataCore.Fullame,
-		Email:    dataCore.Email,
-		Password: dataCore.Password,
-		RoleID:   dataCore.RoleID,
-		Role:     _roleData.Role{},
-		Company:  _companyData.Company{},
-		Level:    _levelData.EmployeeLevel{},
-		LevelID:  dataCore.LevelID,
-		// RoleName:        dataCore.RoleName,
-		// Status: Status(dataCore.Status),
-		// Address:         dataCore.Address,
-		// Gender:          Gender(dataCore.Gender),
-		// PhoneNumber:     dataCore.PhoneNumber,
-		// UrlPhoto:        dataCore.UrlPhoto,
-		// NoNik:           dataCore.NoNik,
-		// NoKk:            dataCore.NoKK,
-		// NoBpjs:          dataCore.NoBpjs,
-		// Npwp:            dataCore.Npwp,
-		// EmergencyName:   dataCore.EmergencyName,
-		// EmergencyStatus: dataCore.EmergencyStatus,
-		// EmergencyPhone: dataCore.EmergencyPhone,
+		Fullname:  dataCore.Fullame,
+		Email:     dataCore.Email,
+		Password:  dataCore.Password,
+		RoleID:    dataCore.RoleID,
+		Role:      _roleData.Role{},
+		Company:   _companyData.Company{},
+		Level:     _levelData.EmployeeLevel{},
+		LevelID:   dataCore.LevelID,
+		UrlPhoto:  dataCore.UrlPhoto,
+		Status:    dataCore.Status,
 		CompanyID: dataCore.CompanyID,
 		CreatedAt: time.Time{},
 		UpdatedAt: time.Time{},
@@ -78,28 +54,16 @@ func CoreToModel(dataCore user.Core) User {
 // mapping struct model to struct core
 func ModelToCore(dataModel User) user.Core {
 	return user.Core{
-		ID:      dataModel.ID,
-		Fullame: dataModel.Fullname,
-		RoleID:  dataModel.RoleID,
-		Role:    user.RoleCore{},
-		Company: user.CompanyCore{},
-		Level:   user.LevelCore{},
-		// Role:    dataModel,
-		// RoleName:        dataModel.RoleName,
-		// PhoneNumber:     dataModel.PhoneNumber,
-		// CompanyId: dataModel.CompanyID,
-		// NoNik:           dataModel.NoNik,
-		// NoKK:            dataModel.NoKk,
-		// NoBpjs:          dataModel.NoBpjs,
-		Password: dataModel.Password,
-		UrlPhoto: dataModel.UrlPhoto,
-		// Status:   string(dataModel.Status),
-		Email: dataModel.Email,
-		// Address:         dataModel.Address,
-		// Gender:          string(dataModel.Gender),
-		// EmergencyName:   dataModel.EmergencyName,
-		// EmergencyStatus: dataModel.EmergencyStatus,
-		// EmergencyPhone: dataModel.EmergencyPhone,
+		ID:        dataModel.ID,
+		Fullame:   dataModel.Fullname,
+		RoleID:    dataModel.RoleID,
+		Role:      user.RoleCore{},
+		Company:   user.CompanyCore{},
+		Level:     user.LevelCore{},
+		Status:    dataModel.Status,
+		Password:  dataModel.Password,
+		UrlPhoto:  dataModel.UrlPhoto,
+		Email:     dataModel.Email,
 		CreatedAt: dataModel.CreatedAt,
 		UpdatedAt: dataModel.UpdatedAt,
 	}

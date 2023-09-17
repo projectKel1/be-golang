@@ -10,8 +10,8 @@ type Core struct {
 	Email       string `validate:"required,email"`
 	Type        string
 	Image       string
-	StartedHour time.Time
-	EndedHour   time.Time
+	StartedHour string
+	EndedHour   string
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	DeletedAt   time.Time
