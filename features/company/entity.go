@@ -12,6 +12,8 @@ type Core struct {
 	Image       string
 	StartedHour string
 	EndedHour   string
+	Visi        string
+	Misi        string
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	DeletedAt   time.Time

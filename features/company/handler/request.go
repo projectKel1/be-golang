@@ -14,6 +14,8 @@ type CompanyRequest struct {
 	Image       string    `json:"image"`
 	StartedHour string    `json:"started_hour"`
 	EndedHour   string    `json:"ended_hour"`
+	Visi        string    `json:"visi"`
+	Misi        string    `json:"misi"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 	DeletedAt   time.Time `json:"deleted_at"`
@@ -29,6 +31,8 @@ func RequestToCore(input CompanyRequest) company.Core {
 		Image:       input.Image,
 		StartedHour: input.StartedHour,
 		EndedHour:   input.EndedHour,
+		Visi:        input.Visi,
+		Misi:        input.Misi,
 		CreatedAt:   time.Time{},
 		UpdatedAt:   time.Time{},
 		DeletedAt:   time.Time{},

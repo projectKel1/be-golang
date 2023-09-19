@@ -87,6 +87,8 @@ func (handler *companyHandler) GetAllCompany(c echo.Context) error {
 			Email:       value.Email,
 			Type:        value.Type,
 			Image:       value.Image,
+			Visi:        value.Visi,
+			Misi:        value.Misi,
 			StartedHour: value.StartedHour,
 			EndedHour:   value.EndedHour,
 		})
@@ -115,6 +117,8 @@ func (handler *companyHandler) GetCompanyId(c echo.Context) error {
 		Email:       result.Email,
 		Type:        result.Type,
 		Image:       result.Image,
+		Visi:        result.Visi,
+		Misi:        result.Misi,
 		StartedHour: result.StartedHour,
 		EndedHour:   result.EndedHour,
 	}

@@ -71,6 +71,8 @@ func (repo *companyQuery) SelectAll(pageNumber int, pageSize int) ([]company.Cor
 			Image:       value.Image,
 			StartedHour: value.StartedHour,
 			EndedHour:   value.EndedHour,
+			Visi:        value.Visi,
+			Misi:        value.Misi,
 			CreatedAt:   time.Time{},
 			UpdatedAt:   time.Time{},
 			DeletedAt:   time.Time{},
