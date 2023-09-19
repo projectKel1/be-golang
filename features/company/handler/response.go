@@ -8,6 +8,8 @@ type CompanyResponse struct {
 	Email       string `json:"email"`
 	Type        string `json:"type"`
 	Image       string `json:"image"`
+	Visi        string `json:"visi"`
+	Misi        string `json:"misi"`
 	StartedHour string `json:"started_hour"`
 	EndedHour   string `json:"ended_hour"`
 }

@@ -17,6 +17,8 @@ type Company struct {
 	Image       string
 	StartedHour string
 	EndedHour   string
+	Visi        string
+	Misi        string
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	DeletedAt   gorm.DeletedAt `gorm:"index"`
@@ -33,6 +35,8 @@ func CoreToModel(dataCore company.Core) Company {
 		Image:       dataCore.Image,
 		StartedHour: dataCore.StartedHour,
 		EndedHour:   dataCore.EndedHour,
+		Visi:        dataCore.Visi,
+		Misi:        dataCore.Misi,
 		CreatedAt:   dataCore.CreatedAt,
 		UpdatedAt:   dataCore.UpdatedAt,
 		DeletedAt:   gorm.DeletedAt{},
@@ -50,6 +54,8 @@ func ModelToCore(dataModel Company) company.Core {
 		Image:       dataModel.Image,
 		StartedHour: dataModel.StartedHour,
 		EndedHour:   dataModel.EndedHour,
+		Visi:        dataModel.Visi,
+		Misi:        dataModel.Misi,
 		CreatedAt:   dataModel.CreatedAt,
 		UpdatedAt:   dataModel.UpdatedAt,
 		DeletedAt:   time.Time{},
