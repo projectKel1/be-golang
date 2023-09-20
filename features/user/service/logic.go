@@ -38,7 +38,7 @@ func (service *userService) Login(email string, password string) (dataLogin user
 	if err != nil {
 		return user.Core{}, "", err
 	}
-	token, err = middlewares.CreateToken(dataLogin.ID, dataLogin.Role.RoleName, dataLogin.Level.Level, dataLogin.Company.CompanyName)
+	token, err = middlewares.CreateToken(dataLogin.ID, dataLogin.Role.RoleName, dataLogin.Level.Level, dataLogin.Company.CompanyName, dataLogin.Fullame)
 	if err != nil {
 		return user.Core{}, "", err
 	}
