@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"group-project-3/app/middlewares"
 	"group-project-3/features/company"
 	"group-project-3/helpers"
 	"net/http"
@@ -24,6 +25,10 @@ func New(service company.CompanyServiceInterface) *companyHandler {
 func (handler *companyHandler) CreateCompany(c echo.Context) error {
 	userInput := new(CompanyRequest)
 	errBind := c.Bind(&userInput)
+	_, roleName := middlewares.ExtractTokenUserId(c)
+	if roleName != "Superadmin" {
+		return c.JSON(http.StatusForbidden, helpers.WebResponse(http.StatusForbidden, "access denied", nil))
+	}
 	if errBind != nil {
 		return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusBadRequest, "error bind data. data not valid", nil))
 	}
