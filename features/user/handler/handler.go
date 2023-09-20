@@ -133,7 +133,7 @@ func (handler *UserHandler) GetAllUser(c echo.Context) error {
 		pageNumber = 1
 	}
 	if pageSize <= 0 {
-		pageSize = 10
+		pageSize = 1000
 	}
 
 	result, err := handler.userService.GetAll(int(pageNumber), int(pageSize), managerId)
