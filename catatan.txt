@@ -18,7 +18,7 @@ docker build -t teguh26/hris_kelompok1:latest --build-arg DBUSER=root --build-ar
 
 docker run -d -it –-rm -p [host_port]:[container_port] --name [container_name] [image_id/image_tag]
 
-contoh : docker run -d -it -p 80:80 -e DBUSER=root -e DBPASS=123 -e DBHOST=34.101.64.219 -e DBPORT=3306 -e DBNAME=hris_kelompok1     teguh26/hris_kelompok1:latest  
+contoh : sudo docker run -d -it -p 80:80 -e DBUSER=root -e DBPASS=123 -e DBHOST=34.101.64.219 -e DBPORT=3306 -e DBNAME=hris_kelompok1     teguh26/hris_kelompok1:latest  
 push docker registry fixing server
 
 
