@@ -131,14 +131,20 @@ func (repo *userQuery) SelectProfile(id int) (dataProfile user.Core, err error) 
 }
 
 // SelectAll implements user.UserDataInterface.
-func (repo *userQuery) SelectAll(pageNumber int, pageSize int) ([]user.Core, error) {
+func (repo *userQuery) SelectAll(pageNumber int, pageSize int, managerId int) ([]user.Core, error) {
 	var userData []User
 	var dataRole _role.Role
 	var dataLevel _level.EmployeeLevel
 	var dataCompany _company.Company
 	offset := (pageNumber - 1) * pageSize
 
-	tx := repo.db.Offset(offset).Limit(pageSize).Find(&userData)
+	var tx = repo.db
+	if managerId != 0 {
+		fmt.Println("Manager ID", managerId)
+		tx = repo.db.Offset(offset).Limit(pageSize).Where("manager_id=?", managerId).Find(&userData)
+	} else {
+		tx = repo.db.Offset(offset).Limit(pageSize).Find(&userData)
+	}
 
 	if tx.Error != nil {
 		return nil, tx.Error
@@ -190,7 +196,6 @@ func (repo *userQuery) UpdateProfile(id int, input user.UserDetailEntity) error 
 		}
 	} else {
 		txDetail := repo.db.Exec("UPDATE user_details SET address=?,gender=?,phone_number=?,nik=?,no_kk=?,no_bpjs=?,npwp=?,emergency_name=?,emergency_status=?,emergency_phone=? WHERE user_id=?", input.Address, input.Gender, input.PhoneNumber, input.Nik, input.NoKK, input.NoBPJS, input.Npwp, input.EmergencyName, input.EmergencyStatus, input.EmergencyPhone, &id)
-
 		if txDetail.Error != nil {
 			return txDetail.Error
 		}
