@@ -51,7 +51,7 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 	//Authentikasi
 	e.POST("/login", userHandlerAPI.Login)
 
-	e.POST("/users", userHandlerAPI.CreateUser)
+	e.POST("/users", userHandlerAPI.CreateUser, middlewares.JWTMiddleware())
 	e.GET("/my-profile", userHandlerAPI.GetProfileUser, middlewares.JWTMiddleware())
 	e.PUT("/my-profile", userHandlerAPI.UpdateMyProfile, middlewares.JWTMiddleware())
 	e.GET("/users", userHandlerAPI.GetAllUser)
