@@ -24,6 +24,8 @@ type LoginResponse struct {
 	RoleName    string `json:"role_name"`
 	CompanyName string `json:"company_name"`
 	Level       string `json:"level"`
+	Fullname    string `json:"fullname"`
+	CompanyID   uint   `json:"company_id"`
 	Token       string `json:"token"`
 }
 
