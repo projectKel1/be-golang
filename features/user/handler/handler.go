@@ -81,6 +81,8 @@ func (handler *UserHandler) Login(c echo.Context) error {
 		RoleName:    dataLogin.Role.RoleName,
 		CompanyName: dataLogin.Company.CompanyName,
 		Level:       dataLogin.Level.Level,
+		Fullname:    dataLogin.Fullame,
+		CompanyID:   dataLogin.CompanyID,
 		Token:       token,
 	}
 	return c.JSON(http.StatusOK, helpers.WebResponse(http.StatusCreated, "success login", response))
