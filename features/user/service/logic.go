@@ -78,3 +78,9 @@ func (service *userService) SelectOtherProfile(id int) (user.Core, error) {
 	result, err := service.userData.SelectOtherProfile(id)
 	return result, err
 }
+
+// DeleteOtherProfile implements user.UserServiceInterface.
+func (service *userService) DeleteOtherProfile(id uint) error {
+	err := service.userData.DeleteOtherProfile(id)
+	return err
+}

@@ -22,6 +22,8 @@ contoh : sudo docker run -d -it -p 80:80 -e DBUSER=root -e DBPASS=123 -e DBHOST=
 push docker registry fixing server
 
 
+sudo docker run -it -p 80:80 -e DBUSER=root -e DBPASS=123 -e DBHOST=34.101.64.219 -e DBPORT=3306 -e DBNAME=hris_kelompok1_production   teguh26/hris_kelompok1:latest 
+
 
 docker login -u teguh26  
 docker push teguh26/hris_kelompok1   

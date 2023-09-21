@@ -131,26 +131,37 @@ func (handler *companyHandler) GetCompanyId(c echo.Context) error {
 }
 
 func (handler *companyHandler) UpdateById(c echo.Context) error {
-	userInput := new(CompanyRequest)
-
 	id := c.Param("company_id")
+
 	idParam, errConv := strconv.Atoi(id)
 	if errConv != nil {
 		return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusBadRequest, "error data id. data not valid", nil))
 	}
-	fmt.Println("COMPANY INPUT", userInput)
-	errBind := c.Bind(&userInput)
-	if errBind != nil {
-		return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusBadRequest, "error bind data. data not valid", nil))
+
+	_, roleName, companyId := middlewares.ExtractTokenUserId(c)
+	if roleName != "Superadmin" {
+		return c.JSON(http.StatusForbidden, helpers.WebResponse(http.StatusForbidden, "Forbidden Access You are not Superadmin", nil))
 	}
-	companyCore := RequestToCore(*userInput)
-	err := handler.companyService.EditById(uint(idParam), companyCore)
-	if err != nil {
-		if strings.Contains(err.Error(), "validation") {
-			return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusBadRequest, err.Error(), nil))
-		} else {
-			return c.JSON(http.StatusInternalServerError, helpers.WebResponse(http.StatusInternalServerError, "error insert data", nil))
+	if idParam != companyId {
+		return c.JSON(http.StatusForbidden, helpers.WebResponse(http.StatusForbidden, "Forbidden Access this is not your company you cannot update", nil))
+	} else {
+		userInput := new(CompanyRequest)
+
+		fmt.Println("COMPANY INPUT", userInput)
+		errBind := c.Bind(&userInput)
+		if errBind != nil {
+			return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusBadRequest, "error bind data. data not valid", nil))
 		}
+		companyCore := RequestToCore(*userInput)
+		err := handler.companyService.EditById(uint(idParam), companyCore)
+		if err != nil {
+			if strings.Contains(err.Error(), "validation") {
+				return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusBadRequest, err.Error(), nil))
+			} else {
+				return c.JSON(http.StatusInternalServerError, helpers.WebResponse(http.StatusInternalServerError, "error insert data", nil))
+			}
+		}
+		return c.JSON(http.StatusOK, helpers.WebResponse(http.StatusOK, "success update data", nil))
 	}
-	return c.JSON(http.StatusOK, helpers.WebResponse(http.StatusOK, "success update data", nil))
+
 }

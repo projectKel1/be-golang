@@ -20,7 +20,7 @@ type User struct {
 	Role      _roleData.Role
 	CompanyID uint
 	Company   _companyData.Company
-	ManagerID *uint
+	ManagerID uint
 	Manager   *User
 	UrlPhoto  string
 	Status    string `gorm:"type:enum('Active','Non-Active');column:status;default:Non-Active"`
@@ -38,7 +38,7 @@ func CoreToModel(dataCore user.Core) User {
 		Email:     dataCore.Email,
 		Password:  dataCore.Password,
 		RoleID:    dataCore.RoleID,
-		ManagerID: &dataCore.ManagerID,
+		ManagerID: dataCore.ManagerID,
 		Role:      _roleData.Role{},
 		Company:   _companyData.Company{},
 		Level:     _levelData.EmployeeLevel{},
@@ -58,7 +58,7 @@ func ModelToCore(dataModel User) user.Core {
 		ID:        dataModel.ID,
 		Fullame:   dataModel.Fullname,
 		RoleID:    dataModel.RoleID,
-		ManagerID: *dataModel.ManagerID,
+		ManagerID: dataModel.ManagerID,
 		Role:      user.RoleCore{},
 		Company:   user.CompanyCore{},
 		Level:     user.LevelCore{},

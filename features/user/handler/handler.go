@@ -187,7 +187,8 @@ func (handler *UserHandler) UpdateMyProfile(c echo.Context) error {
 
 func (handler *UserHandler) UpdateOtherProfile(c echo.Context) error {
 	_, roleName, _ := middlewares.ExtractTokenUserId(c)
-	if (roleName != "Superadmin") || (roleName != "HR") {
+
+	if (roleName != "Superadmin") && (roleName != "HR") {
 		return c.JSON(http.StatusForbidden, helpers.WebResponse(http.StatusForbidden, "Forbidden Access You are not Superadmin or HR", nil))
 	} else {
 		userInput := new(UpdateProfileRequest)
@@ -218,45 +219,82 @@ func (handler *UserHandler) UpdateOtherProfile(c echo.Context) error {
 func (handler *UserHandler) GetOtherProfileUser(c echo.Context) error {
 	id := c.Param("user_id")
 	idConv, errConv := strconv.Atoi(id)
+	_, _, companyId := middlewares.ExtractTokenUserId(c)
+
 	if errConv != nil {
 		return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusBadRequest, "wrong id", nil))
 	}
 
 	result, err := handler.userService.SelectOtherProfile(idConv)
-	if err != nil {
-		if strings.Contains(err.Error(), "validation") {
-			return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusBadRequest, err.Error(), nil))
-		} else if strings.Contains(err.Error(), "record not found") {
-			return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusNotFound, "User with this id is not found", nil))
-		} else {
-			return c.JSON(http.StatusInternalServerError, helpers.WebResponse(http.StatusInternalServerError, "error read data", nil))
+	fmt.Println("Result company ID ", result.Company.ID)
+	fmt.Println("Result company ID ", companyId)
+	fmt.Println(companyId != int(result.Company.ID))
+	if companyId != int(result.Company.ID) {
+		return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusNotFound, "You cannot see profile from user different company with you", nil))
+	} else {
+		if err != nil {
+
+			if strings.Contains(err.Error(), "validation") {
+				return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusBadRequest, err.Error(), nil))
+			} else if strings.Contains(err.Error(), "record not found") {
+				return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusNotFound, "User with this id is not found", nil))
+			} else {
+				return c.JSON(http.StatusInternalServerError, helpers.WebResponse(http.StatusInternalServerError, "error read data", nil))
+			}
+
+		}
+		// mapping dari struct core to struct response
+		usersResponse := ProfileResponse{
+			ID:              result.ID,
+			Fullname:        result.Fullame,
+			Email:           result.Email,
+			Password:        result.Password,
+			UrlPhoto:        result.UrlPhoto,
+			RoleName:        result.Role.RoleName,
+			Level:           result.Level.Level,
+			Status:          result.Status,
+			CompanyName:     result.Company.CompanyName,
+			NoNik:           result.UserDetail.Nik,
+			PhoneNumber:     result.UserDetail.PhoneNumber,
+			Gender:          result.UserDetail.Gender,
+			Address:         result.UserDetail.Address,
+			NoBpjs:          result.UserDetail.Bpjs,
+			NoKK:            result.UserDetail.NoKK,
+			Npwp:            result.UserDetail.Npwp,
+			EmergencyName:   result.UserDetail.EmergencyName,
+			EmergencyStatus: result.UserDetail.EmergencyStatus,
+			EmergencyPhone:  result.UserDetail.EmergencyPhone,
+			CreatedAt:       result.CreatedAt,
+			UpdatedAt:       result.UpdatedAt,
 		}
 
+		return c.JSON(http.StatusOK, helpers.WebResponse(http.StatusOK, "success read detail data", usersResponse))
 	}
-	// mapping dari struct core to struct response
-	usersResponse := ProfileResponse{
-		ID:              result.ID,
-		Fullname:        result.Fullame,
-		Email:           result.Email,
-		Password:        result.Password,
-		UrlPhoto:        result.UrlPhoto,
-		RoleName:        result.Role.RoleName,
-		Level:           result.Level.Level,
-		Status:          result.Status,
-		CompanyName:     result.Company.CompanyName,
-		NoNik:           result.UserDetail.Nik,
-		PhoneNumber:     result.UserDetail.PhoneNumber,
-		Gender:          result.UserDetail.Gender,
-		Address:         result.UserDetail.Address,
-		NoBpjs:          result.UserDetail.Bpjs,
-		NoKK:            result.UserDetail.NoKK,
-		Npwp:            result.UserDetail.Npwp,
-		EmergencyName:   result.UserDetail.EmergencyName,
-		EmergencyStatus: result.UserDetail.EmergencyStatus,
-		EmergencyPhone:  result.UserDetail.EmergencyPhone,
-		CreatedAt:       result.CreatedAt,
-		UpdatedAt:       result.UpdatedAt,
+}
+
+func (handler *UserHandler) DeleteOtherProfile(c echo.Context) error {
+	id := c.Param("user_id")
+	idUser, errConv := strconv.Atoi(id)
+
+	_, roleName, _ := middlewares.ExtractTokenUserId(c)
+
+	if (roleName != "Superadmin") && (roleName != "HR") {
+		return c.JSON(http.StatusForbidden, helpers.WebResponse(http.StatusForbidden, "Forbidden Access You are not Superadmin or HR", nil))
+	} else {
+		if errConv != nil {
+			return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusBadRequest, "error id not valid", nil))
+		}
+
+		err := handler.userService.DeleteOtherProfile(uint(idUser))
+		if err != nil {
+			if strings.Contains(err.Error(), "validation") {
+				return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusBadRequest, err.Error(), nil))
+			} else {
+				return c.JSON(http.StatusInternalServerError, helpers.WebResponse(http.StatusInternalServerError, "error delete data", nil))
+
+			}
+		}
+		return c.JSON(http.StatusOK, helpers.WebResponse(http.StatusOK, "success delete user", nil))
 	}
 
-	return c.JSON(http.StatusOK, helpers.WebResponse(http.StatusOK, "success read detail data", usersResponse))
 }

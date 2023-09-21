@@ -192,18 +192,19 @@ func (repo *userQuery) UpdateProfile(id int, input user.UserDetailEntity) error 
 	tx := repo.db.Exec("update users SET fullname=?,email=?,password=?,url_photo=? WHERE id=?", input.Fullame, input.Email, hashedPassword, input.UrlPhoto, &id)
 	var exists bool
 
-	row := repo.db.Raw("SELECT*FROM user_details WHERE id=?", id)
+	row := repo.db.Raw("SELECT*FROM user_details WHERE user_id=?", id)
 	if errUserDetail := row.Scan(&exists); errUserDetail != nil {
+		txDetail := repo.db.Exec("UPDATE user_details SET address=?,gender=?,phone_number=?,nik=?,no_kk=?,no_bpjs=?,npwp=?,emergency_name=?,emergency_status=?,emergency_phone=? WHERE user_id=?", input.Address, input.Gender, input.PhoneNumber, input.Nik, input.NoKK, input.NoBPJS, input.Npwp, input.EmergencyName, input.EmergencyStatus, input.EmergencyPhone, &id)
+		if txDetail.Error != nil {
+			return txDetail.Error
+		}
+	} else {
 		txDetail := repo.db.Exec("INSERT INTO  user_details (user_id,address,gender,phone_number,nik,no_kk,no_bpjs,npwp,emergency_name,emergency_status,emergency_phone) VALUES(?,?,?,?,?,?,?,?,?,?,?)", &id, input.Address, input.Gender, input.PhoneNumber, input.Nik, input.NoKK, input.NoBPJS, input.Npwp, input.EmergencyName, input.EmergencyStatus, input.EmergencyPhone)
 
 		if txDetail.Error != nil {
 			return txDetail.Error
 		}
-	} else {
-		txDetail := repo.db.Exec("UPDATE user_details SET address=?,gender=?,phone_number=?,nik=?,no_kk=?,no_bpjs=?,npwp=?,emergency_name=?,emergency_status=?,emergency_phone=? WHERE user_id=?", input.Address, input.Gender, input.PhoneNumber, input.Nik, input.NoKK, input.NoBPJS, input.Npwp, input.EmergencyName, input.EmergencyStatus, input.EmergencyPhone, &id)
-		if txDetail.Error != nil {
-			return txDetail.Error
-		}
+
 	}
 
 	if tx.Error != nil {
@@ -224,25 +225,47 @@ func (repo *userQuery) UpdateOtherProfile(id int, input user.UserDetailEntity) e
 
 	var exists bool
 
-	row := repo.db.Raw("SELECT*FROM user_details WHERE id=?", id)
+	row := repo.db.Raw("SELECT*FROM user_details WHERE user_id=?", id)
 	if errUserDetail := row.Scan(&exists); errUserDetail != nil {
-		txDetail := repo.db.Exec("INSERT INTO  user_details (user_id,address,gender,phone_number,nik,no_kk,no_bpjs,npwp,emergency_name,emergency_status,emergency_phone) VALUES(?,?,?,?,?,?,?,?,?,?,?)", &id, input.Address, input.Gender, input.PhoneNumber, input.Nik, input.NoKK, input.NoBPJS, input.Npwp, input.EmergencyName, input.EmergencyStatus, input.EmergencyPhone)
-
-		if txDetail.Error != nil {
-			return txDetail.Error
-		}
-	} else {
 		txDetail := repo.db.Exec("UPDATE user_details SET address=?,gender=?,phone_number=?,nik=?,no_kk=?,no_bpjs=?,npwp=?,emergency_name=?,emergency_status=?,emergency_phone=? WHERE user_id=?", input.Address, input.Gender, input.PhoneNumber, input.Nik, input.NoKK, input.NoBPJS, input.Npwp, input.EmergencyName, input.EmergencyStatus, input.EmergencyPhone, &id)
 
 		if txDetail.Error != nil {
 			return txDetail.Error
 		}
+	} else {
+		txDetail := repo.db.Exec("INSERT INTO  user_details (user_id,address,gender,phone_number,nik,no_kk,no_bpjs,npwp,emergency_name,emergency_status,emergency_phone) VALUES(?,?,?,?,?,?,?,?,?,?,?)", &id, input.Address, input.Gender, input.PhoneNumber, input.Nik, input.NoKK, input.NoBPJS, input.Npwp, input.EmergencyName, input.EmergencyStatus, input.EmergencyPhone)
+
+		if txDetail.Error != nil {
+			return txDetail.Error
+		}
+
 	}
 
 	if tx.Error != nil {
 		return tx.Error
 	}
 
+	return nil
+}
+
+// DeleteOtherProfile implements user.UserDataInterface.
+func (repo *userQuery) DeleteOtherProfile(id uint) error {
+	var userGorm User
+	var userDetailGorm _userDetail.UserDetail
+	tx := repo.db.Where("id = ?", id).Delete(&userGorm)
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	var exists bool
+
+	row := repo.db.Raw("SELECT*FROM user_details WHERE user_id=?", id)
+
+	if errUserDetail := row.Scan(&exists); errUserDetail != nil {
+		repo.db.Where("user_id = ?", id).Delete(&userDetailGorm)
+	} else {
+		fmt.Println("No data user details")
+	}
 	return nil
 }
 
@@ -272,7 +295,8 @@ func (repo *userQuery) SelectOtherProfile(id int) (dataProfile user.Core, err er
 	var companyData _company.Company
 	var levelData _level.EmployeeLevel
 	var userDetailData _userDetail.UserDetail
-	tx := repo.db.First(&usersData, id).Scan(&usersData) // select * from users;
+	tx := repo.db.Raw("SELECT*FROM users WHERE id=?", id).Scan(&usersData) // select * from users;
+
 	repo.db.Raw("SELECT * FROM roles WHERE id=?", usersData.RoleID).Scan(&roleData)
 	repo.db.Raw("SELECT * FROM companies WHERE id=?", usersData.CompanyID).Scan(&companyData)
 	repo.db.Raw("SELECT * FROM employee_levels WHERE id=?", usersData.CompanyID).Scan(&levelData)
@@ -293,6 +317,7 @@ func (repo *userQuery) SelectOtherProfile(id int) (dataProfile user.Core, err er
 	//mapping dari struct gorm model ke struct core (entity)
 	var usersCore = ModelToCore(usersData)
 	usersCore.Role.RoleName = roleData.RoleName
+	usersCore.Company.ID = companyData.ID
 	usersCore.Company.CompanyName = companyData.Name
 	usersCore.Level.Level = levelData.Level
 	usersCore.UserDetail.Nik = userDetailData.Nik
