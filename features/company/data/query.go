@@ -25,9 +25,6 @@ func (repo *companyQuery) Delete(id uint) error {
 // Insert implements company.CompanyDataInterface.
 func (repo *companyQuery) Insert(input company.Core) error {
 
-	if input.Image == "" {
-		input.Image = "https://ui-avatars.com/api/?name=" + input.Name
-	}
 	companyGorm := CoreToModel(input)
 	tx := repo.db.Create(&companyGorm)
 	if tx.Error != nil {
@@ -68,7 +65,6 @@ func (repo *companyQuery) SelectAll(pageNumber int, pageSize int) ([]company.Cor
 			Description: value.Description,
 			Email:       value.Email,
 			Type:        value.Type,
-			Image:       value.Image,
 			StartedHour: value.StartedHour,
 			EndedHour:   value.EndedHour,
 			Visi:        value.Visi,
@@ -83,9 +79,7 @@ func (repo *companyQuery) SelectAll(pageNumber int, pageSize int) ([]company.Cor
 
 // Update implements company.CompanyDataInterface.
 func (repo *companyQuery) Update(id uint, input company.Core) error {
-	if input.Image == "" {
-		input.Image = "https://ui-avatars.com/api/?name=" + input.Name
-	}
+
 	companyGorm := CoreToModel(input)
 	tx := repo.db.Model(&Company{}).Where("id = ?", id).Updates(&companyGorm)
 	if tx.Error != nil {
