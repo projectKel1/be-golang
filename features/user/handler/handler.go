@@ -135,6 +135,7 @@ func (handler *UserHandler) GetAllUser(c echo.Context) error {
 	_, _, companyId := middlewares.ExtractTokenUserId(c)
 
 	managerId, _ := strconv.Atoi(c.QueryParam("manager_id"))
+	filterManager, _ := strconv.Atoi(c.QueryParam("filterManager"))
 
 	if pageNumber <= 0 {
 		pageNumber = 1
@@ -143,7 +144,7 @@ func (handler *UserHandler) GetAllUser(c echo.Context) error {
 		pageSize = 1000
 	}
 
-	result, err := handler.userService.GetAll(int(pageNumber), int(pageSize), managerId, companyId)
+	result, err := handler.userService.GetAll(int(pageNumber), int(pageSize), managerId, companyId, filterManager)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, helpers.WebResponse(http.StatusInternalServerError, "error read data", nil))
 	}
