@@ -146,7 +146,7 @@ func (repo *userQuery) SelectAll(pageNumber int, pageSize int, managerId int, co
 	var tx = repo.db
 	if managerId != 0 {
 		fmt.Println("Manager ID", managerId)
-		tx = repo.db.Offset(offset).Limit(pageSize).Where("manager_id=? AND company_id", managerId, companyId).Find(&userData)
+		tx = repo.db.Offset(offset).Limit(pageSize).Where("manager_id=? AND company_id=?", managerId, companyId).Find(&userData)
 	} else {
 		tx = repo.db.Offset(offset).Limit(pageSize).Where("company_id=?", companyId).Find(&userData)
 	}
