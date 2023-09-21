@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"group-project-3/app/middlewares"
+	"group-project-3/exception"
 	"group-project-3/features/company"
 	"group-project-3/helpers"
 	"net/http"
@@ -27,7 +28,7 @@ func (handler *companyHandler) CreateCompany(c echo.Context) error {
 	errBind := c.Bind(&userInput)
 	_, roleName, _ := middlewares.ExtractTokenUserId(c)
 	if roleName != "Superadmin" {
-		return c.JSON(http.StatusForbidden, helpers.WebResponse(http.StatusForbidden, "access denied", nil))
+		return c.JSON(http.StatusForbidden, helpers.WebResponse(http.StatusForbidden, exception.ErrForbiddenAccess.Error(), nil))
 	}
 	if errBind != nil {
 		return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusBadRequest, "error bind data. data not valid", nil))
@@ -56,7 +57,7 @@ func (handler *companyHandler) DeleteCompany(c echo.Context) error {
 	}
 	_, roleName, _ := middlewares.ExtractTokenUserId(c)
 	if roleName != "Superadmin" {
-		return c.JSON(http.StatusForbidden, helpers.WebResponse(http.StatusForbidden, "access denied", nil))
+		return c.JSON(http.StatusForbidden, helpers.WebResponse(http.StatusForbidden, exception.ErrForbiddenAccess.Error(), nil))
 	}
 
 	err := handler.companyService.DeleteById(uint(idCompany))
@@ -95,7 +96,6 @@ func (handler *companyHandler) GetAllCompany(c echo.Context) error {
 			Description: value.Description,
 			Email:       value.Email,
 			Type:        value.Type,
-			Image:       value.Image,
 			Visi:        value.Visi,
 			Misi:        value.Misi,
 			StartedHour: value.StartedHour,
@@ -125,7 +125,6 @@ func (handler *companyHandler) GetCompanyId(c echo.Context) error {
 		Description: result.Description,
 		Email:       result.Email,
 		Type:        result.Type,
-		Image:       result.Image,
 		Visi:        result.Visi,
 		Misi:        result.Misi,
 		StartedHour: result.StartedHour,
@@ -144,10 +143,10 @@ func (handler *companyHandler) UpdateById(c echo.Context) error {
 
 	_, roleName, companyId := middlewares.ExtractTokenUserId(c)
 	if roleName != "HR" {
-		return c.JSON(http.StatusForbidden, helpers.WebResponse(http.StatusForbidden, "Forbidden Access You are not Superadmin", nil))
+		return c.JSON(http.StatusForbidden, helpers.WebResponse(http.StatusForbidden, exception.ErrForbiddenAccess.Error(), nil))
 	}
 	if idParam != companyId {
-		return c.JSON(http.StatusForbidden, helpers.WebResponse(http.StatusForbidden, "Forbidden Access this is not your company you cannot update", nil))
+		return c.JSON(http.StatusForbidden, helpers.WebResponse(http.StatusForbidden, exception.ErrForbiddenAccess.Error(), nil))
 	} else {
 		userInput := new(CompanyRequest)
 

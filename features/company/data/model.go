@@ -14,7 +14,6 @@ type Company struct {
 	Description string
 	Email       string
 	Type        string
-	Image       string
 	StartedHour string
 	EndedHour   string
 	Visi        string
@@ -32,7 +31,6 @@ func CoreToModel(dataCore company.Core) Company {
 		Description: dataCore.Description,
 		Email:       dataCore.Email,
 		Type:        dataCore.Type,
-		Image:       dataCore.Image,
 		StartedHour: dataCore.StartedHour,
 		EndedHour:   dataCore.EndedHour,
 		Visi:        dataCore.Visi,
@@ -51,7 +49,6 @@ func ModelToCore(dataModel Company) company.Core {
 		Description: dataModel.Description,
 		Email:       dataModel.Email,
 		Type:        dataModel.Type,
-		Image:       dataModel.Image,
 		StartedHour: dataModel.StartedHour,
 		EndedHour:   dataModel.EndedHour,
 		Visi:        dataModel.Visi,

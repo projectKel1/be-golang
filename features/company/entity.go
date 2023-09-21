@@ -9,7 +9,6 @@ type Core struct {
 	Description string
 	Email       string `validate:"required,email"`
 	Type        string
-	Image       string
 	StartedHour string
 	EndedHour   string
 	Visi        string
