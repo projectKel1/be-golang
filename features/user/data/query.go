@@ -24,15 +24,17 @@ func New(db *gorm.DB) user.UserDataInterface {
 }
 
 // Insert implements user.UserDataInterface.
-func (repo *userQuery) Insert(input user.Core) error {
+func (repo *userQuery) Insert(input user.Core, companyId int) error {
 	// mapping dari struct core to struct gorm model
 	hashedPassword, _ := middlewares.HashedPassword(input.Password)
 	input.Password = hashedPassword
+	input.CompanyID = uint(companyId)
 	if input.UrlPhoto == "" {
 		input.UrlPhoto = "https://ui-avatars.com/api/?name=" + input.Fullame
 	}
 
 	userGorm := CoreToModel(input)
+	fmt.Println("cOMPANY ID,level id , manageer id", userGorm.CompanyID, userGorm.LevelID, userGorm.ManagerID)
 
 	// simpan ke DB
 	tx := repo.db.Create(&userGorm) // proses query insert
@@ -75,9 +77,12 @@ func (repo *userQuery) Login(email string, password string) (dataLogin user.Core
 			return user.Core{}, errors.New("data not found")
 		}
 
+		fmt.Println("Company ID ", dataCompany.ID)
+		dataLogin.CompanyID = dataCompany.ID
 		dataLogin = ModelToCore(data)
 		dataLogin.Role.RoleName = dataRole.RoleName
 		dataLogin.Company.CompanyName = dataCompany.Name
+		dataLogin.Company.ID = dataCompany.ID
 		dataLogin.Level.Level = dataLevel.Level
 
 	} else {
@@ -131,7 +136,7 @@ func (repo *userQuery) SelectProfile(id int) (dataProfile user.Core, err error) 
 }
 
 // SelectAll implements user.UserDataInterface.
-func (repo *userQuery) SelectAll(pageNumber int, pageSize int, managerId int) ([]user.Core, error) {
+func (repo *userQuery) SelectAll(pageNumber int, pageSize int, managerId int, companyId int) ([]user.Core, error) {
 	var userData []User
 	var dataRole _role.Role
 	var dataLevel _level.EmployeeLevel
@@ -141,9 +146,9 @@ func (repo *userQuery) SelectAll(pageNumber int, pageSize int, managerId int) ([
 	var tx = repo.db
 	if managerId != 0 {
 		fmt.Println("Manager ID", managerId)
-		tx = repo.db.Offset(offset).Limit(pageSize).Where("manager_id=?", managerId).Find(&userData)
+		tx = repo.db.Offset(offset).Limit(pageSize).Where("manager_id=? AND company_id", managerId, companyId).Find(&userData)
 	} else {
-		tx = repo.db.Offset(offset).Limit(pageSize).Find(&userData)
+		tx = repo.db.Offset(offset).Limit(pageSize).Where("company_id=?", companyId).Find(&userData)
 	}
 
 	if tx.Error != nil {

@@ -24,14 +24,19 @@ func New(service user.UserServiceInterface) *UserHandler {
 
 func (handler *UserHandler) CreateUser(c echo.Context) error {
 	userInput := new(UserRequest)
-	fmt.Println("USER INPUT", userInput)
+	_, _, companyId := middlewares.ExtractTokenUserId(c)
+
 	errBind := c.Bind(&userInput) // mendapatkan data yang dikirim oleh FE melalui request body
 	if errBind != nil {
 		return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusBadRequest, "error bind data. data not valid", nil))
 	}
-
+	// userInput.CompanyID = uint(companyId)
+	fmt.Println("USER INPUT", userInput)
+	fmt.Println("USER INPUT", userInput.CompanyID, userInput.LevelID, userInput.ManagerID)
 	userCore := RequestToCore(*userInput)
-	err := handler.userService.Create(userCore)
+
+	// fmt.Println("company id", companyId)
+	err := handler.userService.Create(userCore, companyId)
 	if err != nil {
 
 		if strings.Contains(err.Error(), "validation") {
@@ -75,6 +80,7 @@ func (handler *UserHandler) Login(c echo.Context) error {
 		}
 	}
 	fmt.Println("ROLE", dataLogin)
+	fmt.Println("CMPNY", dataLogin.Company.ID)
 	response := LoginResponse{
 		ID:          dataLogin.ID,
 		Email:       dataLogin.Email,
@@ -82,14 +88,14 @@ func (handler *UserHandler) Login(c echo.Context) error {
 		CompanyName: dataLogin.Company.CompanyName,
 		Level:       dataLogin.Level.Level,
 		Fullname:    dataLogin.Fullame,
-		CompanyID:   dataLogin.CompanyID,
+		CompanyID:   dataLogin.Company.ID,
 		Token:       token,
 	}
 	return c.JSON(http.StatusOK, helpers.WebResponse(http.StatusCreated, "success login", response))
 }
 
 func (handler *UserHandler) GetProfileUser(c echo.Context) error {
-	idToken, _ := middlewares.ExtractTokenUserId(c)
+	idToken, _, _ := middlewares.ExtractTokenUserId(c)
 
 	result, err := handler.userService.GetProfile(idToken)
 	if err != nil {
@@ -126,6 +132,7 @@ func (handler *UserHandler) GetProfileUser(c echo.Context) error {
 func (handler *UserHandler) GetAllUser(c echo.Context) error {
 	pageNumber, _ := strconv.Atoi(c.QueryParam("page"))
 	pageSize, _ := strconv.Atoi(c.QueryParam("size"))
+	_, _, companyId := middlewares.ExtractTokenUserId(c)
 
 	managerId, _ := strconv.Atoi(c.QueryParam("manager_id"))
 
@@ -136,7 +143,7 @@ func (handler *UserHandler) GetAllUser(c echo.Context) error {
 		pageSize = 1000
 	}
 
-	result, err := handler.userService.GetAll(int(pageNumber), int(pageSize), managerId)
+	result, err := handler.userService.GetAll(int(pageNumber), int(pageSize), managerId, companyId)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, helpers.WebResponse(http.StatusInternalServerError, "error read data", nil))
 	}
@@ -160,7 +167,7 @@ func (handler *UserHandler) GetAllUser(c echo.Context) error {
 }
 
 func (handler *UserHandler) UpdateMyProfile(c echo.Context) error {
-	idToken, _ := middlewares.ExtractTokenUserId(c)
+	idToken, _, _ := middlewares.ExtractTokenUserId(c)
 	userInput := new(UpdateProfileRequest)
 	errBind := c.Bind(&userInput) // mendapatkan data yang dikirim oleh FE melalui request body
 	if errBind != nil {
@@ -179,9 +186,9 @@ func (handler *UserHandler) UpdateMyProfile(c echo.Context) error {
 }
 
 func (handler *UserHandler) UpdateOtherProfile(c echo.Context) error {
-	_, roleName := middlewares.ExtractTokenUserId(c)
-	if roleName != "Superadmin" {
-		return c.JSON(http.StatusForbidden, helpers.WebResponse(http.StatusForbidden, "Forbidden Access You are not Superadmin", nil))
+	_, roleName, _ := middlewares.ExtractTokenUserId(c)
+	if (roleName != "Superadmin") || (roleName != "HR") {
+		return c.JSON(http.StatusForbidden, helpers.WebResponse(http.StatusForbidden, "Forbidden Access You are not Superadmin or HR", nil))
 	} else {
 		userInput := new(UpdateProfileRequest)
 		errBind := c.Bind(&userInput) // mendapatkan data yang dikirim oleh FE melalui request body

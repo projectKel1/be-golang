@@ -21,13 +21,13 @@ func New(repo user.UserDataInterface) user.UserServiceInterface {
 }
 
 // Create implements user.UserServiceInterface.
-func (service *userService) Create(input user.Core) error {
+func (service *userService) Create(input user.Core, companyId int) error {
 	errValidate := service.validate.Struct(input)
 	if errValidate != nil {
 		return errors.New("validation error" + errValidate.Error())
 	}
 
-	err := service.userData.Insert(input)
+	err := service.userData.Insert(input, companyId)
 	return err
 }
 
@@ -38,7 +38,7 @@ func (service *userService) Login(email string, password string) (dataLogin user
 	if err != nil {
 		return user.Core{}, "", err
 	}
-	token, err = middlewares.CreateToken(dataLogin.ID, dataLogin.Role.RoleName, dataLogin.Level.Level, dataLogin.Company.CompanyName, dataLogin.Fullame)
+	token, err = middlewares.CreateToken(dataLogin.ID, dataLogin.Role.RoleName, dataLogin.Level.Level, dataLogin.Company.CompanyName, dataLogin.Fullame, dataLogin.Company.ID)
 	if err != nil {
 		return user.Core{}, "", err
 	}
@@ -52,8 +52,8 @@ func (service *userService) GetProfile(id int) (user.Core, error) {
 }
 
 // GetAll implements user.UserServiceInterface.
-func (service *userService) GetAll(pageNumber int, pageSize int, managerId int) ([]user.Core, error) {
-	result, err := service.userData.SelectAll(pageNumber, pageSize, managerId)
+func (service *userService) GetAll(pageNumber int, pageSize int, managerId int, companyId int) ([]user.Core, error) {
+	result, err := service.userData.SelectAll(pageNumber, pageSize, managerId, companyId)
 
 	if err != nil {
 		return nil, err

@@ -25,7 +25,7 @@ func New(service company.CompanyServiceInterface) *companyHandler {
 func (handler *companyHandler) CreateCompany(c echo.Context) error {
 	userInput := new(CompanyRequest)
 	errBind := c.Bind(&userInput)
-	_, roleName := middlewares.ExtractTokenUserId(c)
+	_, roleName, _ := middlewares.ExtractTokenUserId(c)
 	if roleName != "Superadmin" {
 		return c.JSON(http.StatusForbidden, helpers.WebResponse(http.StatusForbidden, "access denied", nil))
 	}

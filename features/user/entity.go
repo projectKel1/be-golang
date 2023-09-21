@@ -77,21 +77,21 @@ type UserDetailEntity struct {
 }
 
 type UserDataInterface interface {
-	Insert(input Core) error
+	Insert(input Core, companyId int) error
 	Login(email string, password string) (dataLogin Core, err error)
 	SelectProfile(id int) (Core, error)
 	UpdateProfile(id int, input UserDetailEntity) error
 	UpdateOtherProfile(id int, input UserDetailEntity) error
-	SelectAll(pageNumber int, pageSize int, ManagerId int) ([]Core, error)
+	SelectAll(pageNumber int, pageSize int, ManagerId int, CompanyId int) ([]Core, error)
 	SelectOtherProfile(id int) (Core, error)
 }
 
 type UserServiceInterface interface {
-	Create(input Core) error
+	Create(input Core, companyId int) error
 	Login(email string, password string) (dataLogin Core, token string, err error)
 	GetProfile(id int) (Core, error)
 	UpdateProfile(id int, input UserDetailEntity) error
 	UpdateOtherProfile(id int, input UserDetailEntity) error
-	GetAll(pageNumber int, pageSize int, ManagerId int) ([]Core, error)
+	GetAll(pageNumber int, pageSize int, ManagerId int, CompanyId int) ([]Core, error)
 	SelectOtherProfile(id int) (Core, error)
 }

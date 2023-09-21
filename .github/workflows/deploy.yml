@@ -42,8 +42,9 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             sudo docker login
-            sudo docker stop hrisKelompok1Container
-            sudo docker rm hrisKelompok1Container
+            sudo docker stop hrisKelompok12Container
+            sudo docker rm hrisKelompok12Container
             sudo docker rmi ${{ secrets.DOCKERHUB_USERNAME }}/hris_kelompok1:latest
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/hris_kelompok1:latest
-            sudo docker run -d -p 80:80 -e JWTSECRET=${{ secrets.JWTSECRET }} -e DBUSER=${{ secrets.DBUSER }} -e DBPASS=${{ secrets.DBPASS }} -e DBHOST=${{ secrets.DBHOST }} -e DBPORT=${{ secrets.DBPORT }} -e DBNAME=${{ secrets.DBNAME }} --name hrisKelompok1Container ${{ secrets.DOCKERHUB_USERNAME }}/hris_kelompok1:latest
+            sudo docker run -d -p 80:80 -e JWTSECRET=${{ secrets.JWTSECRET }} -e DBUSER=${{ secrets.DBUSER }} -e DBPASS=${{ secrets.DBPASS }} -e DBHOST=${{ secrets.DBHOST }} -e DBPORT=${{ secrets.DBPORT }} -e DBNAME=${{ secrets.DBNAME }} --name hrisKelompok12Container ${{ secrets.DOCKERHUB_USERNAME }}/hris_kelompok1:latest
+            sudod docker run teguh26/hris_kelompok1:latest

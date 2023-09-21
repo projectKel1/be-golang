@@ -51,8 +51,9 @@ func RequestToCore(input UserRequest) user.Core {
 		RoleID:    input.RoleID,
 		CompanyID: input.CompanyID,
 		ManagerID: input.ManagerID,
-		UrlPhoto:  input.UrlPhoto,
 		LevelID:   input.LevelID,
+		UrlPhoto:  input.UrlPhoto,
+
 		CreatedAt: time.Time{},
 		UpdatedAt: time.Time{},
 	}
