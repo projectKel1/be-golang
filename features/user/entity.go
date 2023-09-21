@@ -82,7 +82,7 @@ type UserDataInterface interface {
 	SelectProfile(id int) (Core, error)
 	UpdateProfile(id int, input UserDetailEntity) error
 	UpdateOtherProfile(id int, input UserDetailEntity) error
-	SelectAll(pageNumber int, pageSize int, ManagerId int, CompanyId int) ([]Core, error)
+	SelectAll(pageNumber int, pageSize int, ManagerId int, CompanyId int, filterManager int) ([]Core, error)
 	SelectOtherProfile(id int) (Core, error)
 	DeleteOtherProfile(id uint) error
 }
@@ -93,7 +93,7 @@ type UserServiceInterface interface {
 	GetProfile(id int) (Core, error)
 	UpdateProfile(id int, input UserDetailEntity) error
 	UpdateOtherProfile(id int, input UserDetailEntity) error
-	GetAll(pageNumber int, pageSize int, ManagerId int, CompanyId int) ([]Core, error)
+	GetAll(pageNumber int, pageSize int, ManagerId int, CompanyId int, filterManager int) ([]Core, error)
 	SelectOtherProfile(id int) (Core, error)
 	DeleteOtherProfile(id uint) error
 }

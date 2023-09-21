@@ -58,8 +58,8 @@ func (repo *userQuery) Login(email string, password string) (dataLogin user.Core
 
 		query := `
 		SELECT users.id,users.email,users.company_id,users.role_id,users.level_id,users.company_id ,roles.role_name,companies.name FROM users
-		 INNER JOIN roles ON users.role_id= roles.id 
-		 INNER JOIN companies ON users.company_id=companies.id 
+		 INNER JOIN roles ON users.role_id= roles.id
+		 INNER JOIN companies ON users.company_id=companies.id
 		 WHERE users.email=? AND password=?
 		`
 		tx := repo.db.Raw(query, email, data.Password).Scan(&data)
@@ -136,7 +136,7 @@ func (repo *userQuery) SelectProfile(id int) (dataProfile user.Core, err error) 
 }
 
 // SelectAll implements user.UserDataInterface.
-func (repo *userQuery) SelectAll(pageNumber int, pageSize int, managerId int, companyId int) ([]user.Core, error) {
+func (repo *userQuery) SelectAll(pageNumber int, pageSize int, managerId int, companyId int, filterManager int) ([]user.Core, error) {
 	var userData []User
 	var dataRole _role.Role
 	var dataLevel _level.EmployeeLevel
@@ -147,8 +147,10 @@ func (repo *userQuery) SelectAll(pageNumber int, pageSize int, managerId int, co
 	if managerId != 0 {
 		fmt.Println("Manager ID", managerId)
 		tx = repo.db.Offset(offset).Limit(pageSize).Where("manager_id=? AND company_id=?", managerId, companyId).Find(&userData)
-	} else {
+	} else if filterManager == 0 {
 		tx = repo.db.Offset(offset).Limit(pageSize).Where("company_id=?", companyId).Find(&userData)
+	} else {
+		tx = repo.db.Offset(offset).Limit(pageSize).Where("company_id=? AND role_id = 2", companyId).Find(&userData)
 	}
 
 	if tx.Error != nil {
