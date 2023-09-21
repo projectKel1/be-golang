@@ -54,6 +54,10 @@ func (handler *companyHandler) DeleteCompany(c echo.Context) error {
 	if errConv != nil {
 		return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusBadRequest, "error id not valid", nil))
 	}
+	_, roleName, _ := middlewares.ExtractTokenUserId(c)
+	if roleName != "Superadmin" {
+		return c.JSON(http.StatusForbidden, helpers.WebResponse(http.StatusForbidden, "access denied", nil))
+	}
 
 	err := handler.companyService.DeleteById(uint(idCompany))
 	if err != nil {
@@ -75,7 +79,7 @@ func (handler *companyHandler) GetAllCompany(c echo.Context) error {
 		pageNumber = 1
 	}
 	if pageSize <= 0 {
-		pageSize = 10
+		pageSize = 100
 	}
 
 	result, err := handler.companyService.GetAll(int(pageNumber), int(pageSize))
@@ -139,7 +143,7 @@ func (handler *companyHandler) UpdateById(c echo.Context) error {
 	}
 
 	_, roleName, companyId := middlewares.ExtractTokenUserId(c)
-	if roleName != "Superadmin" {
+	if roleName != "HR" {
 		return c.JSON(http.StatusForbidden, helpers.WebResponse(http.StatusForbidden, "Forbidden Access You are not Superadmin", nil))
 	}
 	if idParam != companyId {
