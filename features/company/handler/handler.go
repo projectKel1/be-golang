@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"group-project-3/app/middlewares"
 	"group-project-3/exception"
 	"group-project-3/features/company"
@@ -30,6 +29,7 @@ func (handler *companyHandler) CreateCompany(c echo.Context) error {
 	if roleName != "Superadmin" {
 		return c.JSON(http.StatusForbidden, helpers.WebResponse(http.StatusForbidden, exception.ErrForbiddenAccess.Error(), nil))
 	}
+
 	if errBind != nil {
 		return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusBadRequest, "error bind data. data not valid", nil))
 	}
@@ -107,6 +107,7 @@ func (handler *companyHandler) GetAllCompany(c echo.Context) error {
 
 func (handler *companyHandler) GetCompanyId(c echo.Context) error {
 	id := c.Param("company_id")
+
 	idConv, errConv := strconv.Atoi(id)
 	if errConv != nil {
 		return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusBadRequest, "error id not valid", nil))
@@ -117,20 +118,25 @@ func (handler *companyHandler) GetCompanyId(c echo.Context) error {
 
 		return c.JSON(http.StatusNotFound, helpers.WebResponse(http.StatusNotFound, "data not found", nil))
 	}
-	// mapping dari struct core to struct response
-	resultResponse := CompanyResponse{
-		ID:          result.ID,
-		Name:        result.Name,
-		Address:     result.Address,
-		Description: result.Description,
-		Email:       result.Email,
-		Type:        result.Type,
-		Visi:        result.Visi,
-		Misi:        result.Misi,
-		StartedHour: result.StartedHour,
-		EndedHour:   result.EndedHour,
+
+	_, _, companyId := middlewares.ExtractTokenUserId(c)
+	if idConv != companyId {
+		return c.JSON(http.StatusForbidden, helpers.WebResponse(http.StatusForbidden, exception.ErrForbiddenAccess.Error(), nil))
+	} else {
+		resultResponse := CompanyResponse{
+			ID:          result.ID,
+			Name:        result.Name,
+			Address:     result.Address,
+			Description: result.Description,
+			Email:       result.Email,
+			Type:        result.Type,
+			Visi:        result.Visi,
+			Misi:        result.Misi,
+			StartedHour: result.StartedHour,
+			EndedHour:   result.EndedHour,
+		}
+		return c.JSON(http.StatusOK, helpers.WebResponse(http.StatusOK, "success read data", resultResponse))
 	}
-	return c.JSON(http.StatusOK, helpers.WebResponse(http.StatusOK, "success read data", resultResponse))
 }
 
 func (handler *companyHandler) UpdateById(c echo.Context) error {
@@ -142,15 +148,13 @@ func (handler *companyHandler) UpdateById(c echo.Context) error {
 	}
 
 	_, roleName, companyId := middlewares.ExtractTokenUserId(c)
-	if roleName != "HR" {
+	if roleName == "Non-HR" {
 		return c.JSON(http.StatusForbidden, helpers.WebResponse(http.StatusForbidden, exception.ErrForbiddenAccess.Error(), nil))
 	}
 	if idParam != companyId {
 		return c.JSON(http.StatusForbidden, helpers.WebResponse(http.StatusForbidden, exception.ErrForbiddenAccess.Error(), nil))
 	} else {
 		userInput := new(CompanyRequest)
-
-		fmt.Println("COMPANY INPUT", userInput)
 		errBind := c.Bind(&userInput)
 		if errBind != nil {
 			return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusBadRequest, "error bind data. data not valid", nil))
