@@ -150,7 +150,7 @@ func (repo *userQuery) SelectAll(pageNumber int, pageSize int, managerId int, co
 	} else if filterManager == 0 {
 		tx = repo.db.Offset(offset).Limit(pageSize).Where("company_id=?", companyId).Find(&userData)
 	} else {
-		tx = repo.db.Offset(offset).Limit(pageSize).Where("company_id=? AND role_id = 2", companyId).Find(&userData)
+		tx = repo.db.Offset(offset).Limit(pageSize).Where("company_id=? AND level_id = 2", companyId).Find(&userData)
 	}
 
 	if tx.Error != nil {
