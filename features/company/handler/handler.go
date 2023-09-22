@@ -83,6 +83,11 @@ func (handler *companyHandler) GetAllCompany(c echo.Context) error {
 		pageSize = 100
 	}
 
+	_, roleName, _ := middlewares.ExtractTokenUserId(c)
+	if roleName != "Superadmin" {
+		return c.JSON(http.StatusForbidden, helpers.WebResponse(http.StatusForbidden, exception.ErrForbiddenAccess.Error(), nil))
+	}
+
 	result, err := handler.companyService.GetAll(int(pageNumber), int(pageSize))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, helpers.WebResponse(http.StatusInternalServerError, "error read data", nil))
@@ -119,8 +124,8 @@ func (handler *companyHandler) GetCompanyId(c echo.Context) error {
 		return c.JSON(http.StatusNotFound, helpers.WebResponse(http.StatusNotFound, "data not found", nil))
 	}
 
-	_, _, companyId := middlewares.ExtractTokenUserId(c)
-	if idConv != companyId {
+	_, _, userCompanyId := middlewares.ExtractTokenUserId(c)
+	if idConv != userCompanyId {
 		return c.JSON(http.StatusForbidden, helpers.WebResponse(http.StatusForbidden, exception.ErrForbiddenAccess.Error(), nil))
 	} else {
 		resultResponse := CompanyResponse{
@@ -147,11 +152,11 @@ func (handler *companyHandler) UpdateById(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, helpers.WebResponse(http.StatusBadRequest, "error data id. data not valid", nil))
 	}
 
-	_, roleName, companyId := middlewares.ExtractTokenUserId(c)
+	_, roleName, userCompanyId := middlewares.ExtractTokenUserId(c)
 	if roleName == "Non-HR" {
 		return c.JSON(http.StatusForbidden, helpers.WebResponse(http.StatusForbidden, exception.ErrForbiddenAccess.Error(), nil))
 	}
-	if idParam != companyId {
+	if idParam != userCompanyId {
 		return c.JSON(http.StatusForbidden, helpers.WebResponse(http.StatusForbidden, exception.ErrForbiddenAccess.Error(), nil))
 	} else {
 		userInput := new(CompanyRequest)
